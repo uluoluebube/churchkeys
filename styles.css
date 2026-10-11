@@ -45,3 +45,15 @@ body[data-view="simple"] .listening-panel{max-width:100%}
 .style-select{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:1050px){.quick-grid{grid-template-columns:1fr 1fr}.quick-buttons{grid-column:1/-1}.quick-buttons .quick-start{flex:1}}
 @media(max-width:650px){.quick-panel{padding:17px}.quick-top{flex-direction:column}.view-switch{align-self:flex-start}.quick-grid{grid-template-columns:1fr}.quick-buttons{grid-column:auto}.quick-bottom{align-items:flex-start;flex-direction:column}.quick-buttons .quick-stop{min-width:100px}.style-select{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* v0.4 — flow and bass lab. Retains v0.3 layout and dashboard. */
+.quick-mix{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
+.bass-toggle{border:1px solid #76609d;background:#322a48;color:#e4d7fb;border-radius:10px;padding:9px 13px;font-size:11px;font-weight:800}
+.bass-toggle[aria-pressed="false"]{color:#a8adbc;background:#242737;border-color:#424451}
+.feel-status{font-size:11px;color:#b6adc7;display:inline-flex;align-items:center;gap:6px}
+.feel-status:before{content:"";width:7px;height:7px;background:#ba9cff;border-radius:50%;box-shadow:0 0 9px #b79cff88}
+.quick-examples{display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.quick-examples button{border:0;background:none;color:#d1bafa;font-size:11px;font-weight:800;padding:7px 0}
+.quick-examples button:disabled{opacity:.55}
+.bass-control{border:1px solid #554368;background:linear-gradient(145deg,#29263a,#202435);border-radius:12px;padding:15px}
+@media(max-width:650px){.quick-mix{align-items:flex-start}.quick-examples{gap:9px}.quick-examples button{font-size:10px}}

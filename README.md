@@ -1,32 +1,24 @@
-# ChurchKeys 0.3 — Simple + Musician Views
+# ChurchKeys v0.4 — Service Flow & Bass Lab
 
-Free, browser-only beta for private testing. The existing v0.2 design and full controls are preserved.
+## Install / update on Netlify
+Extract the ZIP and replace the root files in your GitHub repository. Keep `assets/`, `analysis/`, `app.js`, `styles.css`, `index.html`, `manifest.webmanifest`, and `sw.js`. GitHub-linked Netlify redeploys upon commit; there is no build command; publish directory is `.`. Hard-refresh if an earlier service-worker cache remains.
 
-## How to use without musical training
+## Test: non-musician setup
+1. Open your HTTPS Netlify URL on a laptop. Keep output volume LOW, preferably on headphones during first test.
+2. Simple View has `Music feel: Automatically follow service (experimental)`, `Start playing`, `Stop`, `Bass guitar ON/OFF`. The built-in microphone is supported; grant permission.
+3. `Hear service transitions` demonstrates worship → praise → highlife → Ariaria sounds. It doesn't listen to a singer and should NOT be confused with automatic performance recognition.
+4. Test with a live drummer/singer in rehearsal. The live style estimator needs several stable rhythm observations to consider changing its style. Watch `Now:` feel status. It can often be wrong.
+5. Musician View retains key, BPM, progression, accompaniment energy and piano sound, plus bass level. Guided mode remains the most predictable demonstration.
 
-1. Open your Netlify HTTPS URL and allow microphone access.
-2. Leave **Simple View** on (default), select the general feel (Gentle Worship, Praise, Highlife Praise, or Ariaria), and press **Start playing**.
-3. The app will listen using the laptop microphone, then attempt to infer a key and select accompanying chords. **These inferences are still crude and may play wrong chords or no chords.**
-4. Press **Stop** to end. To test only the accompaniment without a mic, click **Hear an example groove**. That demo uses a default C-major arrangement and is not live song recognition.
-5. For a known arrangement previously saved by a musician, select it in **Optional saved song**. That gives the app better chord guidance; it is not automatic searching or identification.
-6. Press **Musician View** to reveal the original detailed panels (key, progression, tempo, energy, sample instrument and song memory). Return to **Simple View** anytime.
+## What is / isn't autonomous
+**Is implemented**: basic microphone melody pitch and key approximation; crude rhythm-onset/BPM estimates; style selection heuristics using thresholds with a persistence period; changes at bar boundaries; chords from simple templates and melody compatibility; richer original keyboard and electric bass patterns.
+**Not implemented**: reliable beat-grid phase synchronization with the drummer, recognition of specific songs or musical sections, confident chord estimation from multi-instrument mixes, automatic modulations/transposition, fully independent real-time keyboardist improvisation, dataset-trained model, or actual instrument source separation. Treat all live accompaniment as experimental, not production-ready.
 
-## What's new
+## Bass
+The bass is generated with an independent plucked synthesizer, not a sampled real bass guitar. It follows the same **estimated / guided** chord as the piano, so an incorrect chord means an incorrect bass line. Start with low bass output to protect PA/headphones; increase carefully. Synth works offline.
 
-- 2 interface levels: non-musician Quick Start and full musician settings.
-- New original *highlife* and *Ariaria* rhythmic accompaniment patterns plus two existing worship and praise styles.
-- Reference-inspired starting pulse suggestions derived from the supplied recordings, not a trained ML model.
-- Preserves existing MIDI-style synthesis and optional sampled piano sound.
-- Saves view choice, preferences and song presets in this browser only.
+## Referenced recordings
+The 21 provided files only informed a rhythm-profile study in v0.3 (`analysis/REFERENCE_NOTES.md`); they have **not** trained an AI keyboardist. The ZIP contains no uploaded recordings. For future training, request permission and gather isolated keyboard MIDI and separated direct bass, drums and vocal recordings, annotated with bars/chords/sections.
 
-## Files & deployment
-
-This is a static site with no build command. Replace your existing Netlify-linked GitHub repo files with those from this ZIP (keep `assets/`, `analysis/`, `app.js`, `index.html`, `styles.css`, `sw.js`, etc.), commit, and refresh your website. Netlify publish directory: `.`.
-
-## What the 21 recordings contributed
-
-See `analysis/REFERENCE_NOTES.md` and `analysis/recording-feature-excerpts.json`. Source audio stays private and is NOT included. The included rhythm programs are original approximations that respond to groove categories; these recordings have not been transcribed into individual keyboard MIDI parts or used to train a model. For that, obtain permission and ideally get MIDI performances/isolated keyboard tracks.
-
-## Safety and restrictions
-
-Do not depend on the experimental auto-harmony engine unattended in a live church service. Start at low output volume, ideally with headphones, and test during rehearsals. Using the microphone next to the church PA can lead to feedback or self-detection. Use the Stop button if the harmony is wrong. Browser audio requires HTTPS or localhost. The optional grand piano uses Salamander Grand Piano (Alexander Holm), CC BY 3.0; the piano recordings download from Tone.js's demo CDN only when enabled. No Gemini key, paid API, online login or data upload is needed. Large external piano samples will not work offline until cached; synthesizer fallback remains available.
+## Setup and privacy
+No login, paid API or Gemini key required. Music analysis and synthesized playback occur in the browser. Preferences and saved song settings remain in localStorage for this browser. Grand piano recordings are optional and fetched from Tone.js demo server under CC BY 3.0 (Alexander Holm); synth fallback if offline. Browser mic capture needs HTTPS or localhost. Avoid positioning laptop mic beside PA output to reduce feedback/self-detection.
