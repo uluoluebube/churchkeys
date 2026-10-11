@@ -20,3 +20,28 @@
 .song-memory .full-select{max-width:100%;width:100%}.song-actions{display:flex;gap:8px}.song-actions .btn{flex:1}
 .live-actions .btn-dark{white-space:nowrap}
 @media(max-width:650px){.live-actions .btn-dark{min-width:44%;flex:1}.live-actions .btn-stop{min-width:44%}}
+
+
+/* v0.3: retain the original professional dashboard, add a first-class simple operator view */
+.quick-panel{padding:22px 25px;margin-bottom:20px;background:radial-gradient(circle at 94% -20%,#3c295a 0,transparent 42%),linear-gradient(120deg,#201d31,#191e2d);border-color:#65507f}
+.quick-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.quick-top h2{font:800 22px Manrope,sans-serif;letter-spacing:-.6px}
+.quick-top p{color:#a6a3b7;line-height:1.5;font-size:11px;margin-top:5px}
+.view-switch{border:1px solid #78609a;background:#3d305a;border-radius:10px;color:#eee3ff;padding:11px 15px;white-space:nowrap;font-size:11px;font-weight:800}
+.view-switch span{color:#c7aaff;margin-left:5px}
+.quick-grid{display:grid;grid-template-columns:minmax(155px,1fr) minmax(175px,1.1fr) auto;gap:13px;align-items:end}
+.quick-field{display:flex;flex-direction:column;gap:9px;font-size:11px;color:#cec5df;font-weight:800;min-width:0}
+.quick-field select{width:100%;border:1px solid #554664;background:#252537;color:#fff;border-radius:9px;padding:13px 14px;font-size:12px;min-width:0}
+.quick-buttons{display:flex;gap:8px;align-items:center}
+.quick-start{background:#bba3fa;color:#211632;padding:14px 19px;font-size:12px}
+.quick-stop{background:#4b2b38;color:#ffe1e4;border:1px solid #694451;padding:13px 15px;font-size:12px}
+.quick-bottom{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#aeb2c3;font-size:11px}
+.quick-bottom span{display:inline-flex;align-items:center;gap:7px}
+.quick-bottom button{border:0;background:transparent;color:#d1bafa;font-size:11px;font-weight:800;padding:8px 0}
+.quick-warning{color:#8e91a5;font-size:10px;line-height:1.5;margin-top:5px}
+body[data-view="simple"] .dashboard{grid-template-columns:minmax(0,1fr)}
+body[data-view="simple"] #advancedControls{display:none}
+body[data-view="simple"] .listening-panel{max-width:100%}
+.style-select{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1050px){.quick-grid{grid-template-columns:1fr 1fr}.quick-buttons{grid-column:1/-1}.quick-buttons .quick-start{flex:1}}
+@media(max-width:650px){.quick-panel{padding:17px}.quick-top{flex-direction:column}.view-switch{align-self:flex-start}.quick-grid{grid-template-columns:1fr}.quick-buttons{grid-column:auto}.quick-bottom{align-items:flex-start;flex-direction:column}.quick-buttons .quick-stop{min-width:100px}.style-select{grid-template-columns:repeat(2,minmax(0,1fr))}}

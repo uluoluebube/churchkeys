@@ -1,0 +1,305 @@
+{
+  "method": "15-second excerpts; autocorrelation onset pulse candidates; not exact transcription; do not treat as ground-truth BPM",
+  "recordings": [
+    {
+      "recording": "2026 CCI Utako Praise medley.m4a",
+      "duration_sec": 1168.8,
+      "samples": [
+        {
+          "at_sec": 327.3,
+          "pulse_bpm_candidate": 66.3,
+          "pulse_strength": 0.405,
+          "onset_density": 0.143
+        },
+        {
+          "at_sec": 771.4,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.558,
+          "onset_density": 0.17
+        }
+      ]
+    },
+    {
+      "recording": "21 June 2026.m4a",
+      "duration_sec": 68.9,
+      "samples": [
+        {
+          "at_sec": 19.3,
+          "pulse_bpm_candidate": 123.0,
+          "pulse_strength": 0.484,
+          "onset_density": 0.174
+        }
+      ]
+    },
+    {
+      "recording": "African Ariaria praise medley.m4a",
+      "duration_sec": 1146.1,
+      "samples": [
+        {
+          "at_sec": 320.9,
+          "pulse_bpm_candidate": 152.0,
+          "pulse_strength": 0.618,
+          "onset_density": 0.181
+        },
+        {
+          "at_sec": 756.4,
+          "pulse_bpm_candidate": 152.0,
+          "pulse_strength": 0.532,
+          "onset_density": 0.182
+        }
+      ]
+    },
+    {
+      "recording": "CCI Abuja musicians on Fire Always (2).m4a",
+      "duration_sec": 1189.9,
+      "samples": [
+        {
+          "at_sec": 333.2,
+          "pulse_bpm_candidate": 66.3,
+          "pulse_strength": 0.186,
+          "onset_density": 0.137
+        },
+        {
+          "at_sec": 785.3,
+          "pulse_bpm_candidate": 107.7,
+          "pulse_strength": 0.565,
+          "onset_density": 0.162
+        }
+      ]
+    },
+    {
+      "recording": "CCI Abuja musicians on Fire Always.m4a",
+      "duration_sec": 1189.9,
+      "samples": [
+        {
+          "at_sec": 333.2,
+          "pulse_bpm_candidate": 66.3,
+          "pulse_strength": 0.186,
+          "onset_density": 0.137
+        },
+        {
+          "at_sec": 785.3,
+          "pulse_bpm_candidate": 107.7,
+          "pulse_strength": 0.565,
+          "onset_density": 0.162
+        }
+      ]
+    },
+    {
+      "recording": "Full video in my channel (2).m4a",
+      "duration_sec": 58.3,
+      "samples": [
+        {
+          "at_sec": 16.3,
+          "pulse_bpm_candidate": 89.1,
+          "pulse_strength": 0.434,
+          "onset_density": 0.188
+        }
+      ]
+    },
+    {
+      "recording": "Full video in my channel (3).m4a",
+      "duration_sec": 75.2,
+      "samples": [
+        {
+          "at_sec": 21.0,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.563,
+          "onset_density": 0.185
+        }
+      ]
+    },
+    {
+      "recording": "Full video in my channel.m4a",
+      "duration_sec": 104.9,
+      "samples": [
+        {
+          "at_sec": 29.4,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.366,
+          "onset_density": 0.188
+        }
+      ]
+    },
+    {
+      "recording": "Full video on my channel (2).m4a",
+      "duration_sec": 48.7,
+      "samples": [
+        {
+          "at_sec": 13.6,
+          "pulse_bpm_candidate": 73.8,
+          "pulse_strength": 0.39,
+          "onset_density": 0.193
+        }
+      ]
+    },
+    {
+      "recording": "Full video on my channel.m4a",
+      "duration_sec": 38.0,
+      "samples": [
+        {
+          "at_sec": 10.6,
+          "pulse_bpm_candidate": 172.3,
+          "pulse_strength": 0.392,
+          "onset_density": 0.168
+        }
+      ]
+    },
+    {
+      "recording": "Highlife praise medley by Cci Avengers.m4a",
+      "duration_sec": 1204.3,
+      "samples": [
+        {
+          "at_sec": 337.2,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.638,
+          "onset_density": 0.164
+        },
+        {
+          "at_sec": 794.8,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.632,
+          "onset_density": 0.178
+        }
+      ]
+    },
+    {
+      "recording": "Just_when_you_thought_we_are_done_with_this_melody_and_progressi.m4a",
+      "duration_sec": 79.4,
+      "samples": [
+        {
+          "at_sec": 22.2,
+          "pulse_bpm_candidate": 66.3,
+          "pulse_strength": 0.592,
+          "onset_density": 0.188
+        }
+      ]
+    },
+    {
+      "recording": "Love medley full video on this channel.m4a",
+      "duration_sec": 64.7,
+      "samples": [
+        {
+          "at_sec": 18.1,
+          "pulse_bpm_candidate": 89.1,
+          "pulse_strength": 0.462,
+          "onset_density": 0.17
+        }
+      ]
+    },
+    {
+      "recording": "Merging two songs together full video in my YouTube channel.m4a",
+      "duration_sec": 76.6,
+      "samples": [
+        {
+          "at_sec": 21.4,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.562,
+          "onset_density": 0.173
+        }
+      ]
+    },
+    {
+      "recording": "Musicians locked the whole music.m4a",
+      "duration_sec": 90.5,
+      "samples": [
+        {
+          "at_sec": 25.3,
+          "pulse_bpm_candidate": 152.0,
+          "pulse_strength": 0.731,
+          "onset_density": 0.181
+        }
+      ]
+    },
+    {
+      "recording": "New groove unlocked.m4a",
+      "duration_sec": 48.4,
+      "samples": [
+        {
+          "at_sec": 13.5,
+          "pulse_bpm_candidate": 61.5,
+          "pulse_strength": 0.451,
+          "onset_density": 0.193
+        }
+      ]
+    },
+    {
+      "recording": "Praise Riot in Cci Utako Abuja.m4a",
+      "duration_sec": 1218.4,
+      "samples": [
+        {
+          "at_sec": 341.2,
+          "pulse_bpm_candidate": 136.0,
+          "pulse_strength": 0.511,
+          "onset_density": 0.17
+        },
+        {
+          "at_sec": 804.1,
+          "pulse_bpm_candidate": 66.3,
+          "pulse_strength": 0.636,
+          "onset_density": 0.181
+        }
+      ]
+    },
+    {
+      "recording": "Praise Therapy.m4a",
+      "duration_sec": 981.0,
+      "samples": [
+        {
+          "at_sec": 274.7,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.404,
+          "onset_density": 0.173
+        },
+        {
+          "at_sec": 647.5,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.594,
+          "onset_density": 0.192
+        }
+      ]
+    },
+    {
+      "recording": "Thanksgiving service at CCI utako Abuja.m4a",
+      "duration_sec": 1177.8,
+      "samples": [
+        {
+          "at_sec": 329.8,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.381,
+          "onset_density": 0.178
+        },
+        {
+          "at_sec": 777.3,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.373,
+          "onset_density": 0.164
+        }
+      ]
+    },
+    {
+      "recording": "The band came prepared for war.m4a",
+      "duration_sec": 63.9,
+      "samples": [
+        {
+          "at_sec": 17.9,
+          "pulse_bpm_candidate": 161.5,
+          "pulse_strength": 0.569,
+          "onset_density": 0.193
+        }
+      ]
+    },
+    {
+      "recording": "You have to be careful o..make hand no touch you.m4a",
+      "duration_sec": 47.8,
+      "samples": [
+        {
+          "at_sec": 13.4,
+          "pulse_bpm_candidate": 129.2,
+          "pulse_strength": 0.488,
+          "onset_density": 0.178
+        }
+      ]
+    }
+  ]
+}
