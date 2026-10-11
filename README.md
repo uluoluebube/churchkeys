@@ -1,50 +1,41 @@
-# ChurchKeys Live Engine v1.0 — browser-based accompaniment testing
+# ChurchKeys v1.1 — Pace & Continuity
 
-This replaces the old *single-note-only* key gating with a mixed-audio listening pipeline and predictable user-visible behavior. It is a **field-testable prototype**; it is not yet a production-validated replacement for an experienced church keyboardist. No account, paid API, backend or build is required.
+**Field-testable browser accompaniment prototype. Not a production-validated, fully autonomous church keyboardist.** No login or paid API required. Designed for Netlify static hosting.
 
-## Deploy with your existing GitHub → Netlify setup
+## Deploy to the existing GitHub → Netlify site
 
-1. Extract this ZIP.
-2. Replace the **root files** of your current GitHub repository with the extracted root files, including `music-intelligence.js`, `app.js`, `styles.css`, `index.html`, `sw.js`, `manifest.webmanifest`, `netlify.toml` and `assets/`.
-3. Commit and wait for Netlify to deploy. The publish directory remains `.`; no build command.
-4. Refresh the website. If an earlier service worker displays an old version, close all open ChurchKeys tabs and reopen the Netlify URL; if necessary, clear the website's cached data. Confirm the header says `LIVE 1.0`.
+1. Extract `ChurchKeys-Pace-and-Continuity-v1.1.zip` and upload/replace the project files in the **root** of your GitHub repository.
+2. Commit the changes. Netlify should automatically redeploy. No build command; publish directory: `.`.
+3. Reload the site. Check that the header displays **LIVE 1.1**. Close old tabs and hard-refresh if the old PWA/service worker is cached.
 
-## First test (recommended)
+## Test the two requested behaviors
 
-1. Connect headphones at **low volume**. Press **Test piano** first to check output.
-2. Under **Listening source**, choose **Play an audio file**. Choose an MP3 or WAV that contains a clear worship/praise song. Press **Start playing**.
-3. Monitor **Input signal**, **Estimated key**, **Engine status**, **Now playing**, and the **output %** indicator. The selected recording is processed locally; the browser does not upload it.
-4. If the key is marked **PROVISIONAL**, treat accompaniment as a tentative guess and use the low-volume test rather than trusting it live. A mix of drums and speech often gives weak harmonic information.
-5. For the live church test, switch back to **Laptop microphone** and click **Start playing**. Grant mic permission and position the laptop away from its own speakers. Connect the AUX output only after checking the sound on headphones.
-6. Stop all output immediately if a wrong chord clashes with the singers. Don't depend on v1.0 for an unmonitored service.
+1. Keep laptop volume low and plug in headphones. Optionally select **Play an audio file**, or use the built-in laptop microphone.
+2. Press **Start playing** and play/sing a song with a clear recurring pulse. In Simple View, watch **LISTENING FOR RHYTHM** change to **FOLLOWING PACE** after a sufficiently regular beat is detected. At uncertain tempo, the app uses a **spacious chord/pad bed** rather than forcing a fast praise groove.
+3. Have the vocalist pause (or let the chosen recording end). Observe **INSTRUMENTAL CONTINUES** and confirm bass/piano carry on at the last stable pace and harmony.
+4. Press **Stop**: the mix fades over approximately 1.5 seconds. You can also use Musician View to disable automatic tempo following or uninterrupted accompaniment, or use Tap BPM to override a weak detection.
 
-## Improvements versus v0.5
+## What actually changed from v1.0
 
-- Mixed-audio harmonic analysis (spectrum → chroma → tentative key/chords) instead of relying exclusively on monophonic pitch detection.
-- **Autonomous startup after audio is detected**. A missing stable vocal note no longer permanently gates the sound engine; after sustained music, a provisional (quieter) accompaniment can begin.
-- Source selector: built-in microphone or local audio file. Local files provide reproducible tests without the room's acoustics interfering.
-- Clear statuses for waiting, analyzing, provisional harmony, and guided accompaniment.
-- Separate output waveform measurement lets us verify that sound was generated, not just that the UI changed.
-- Conservative key-change hysteresis, dedicated bass instrument and the existing musician controls preserved.
-- Automated pure-unit tests under `tests/` with `npm test`. This uses only built-in Node.js test features; there are **no npm dependencies**.
+- Added `pace-follow.js`: a separate pulse-confidence and tempo control system. It requires repeated, reasonably consistent beat intervals. Arbitrary fast style presets no longer dictate the live tempo. It resists short spurious changes, changes speed gradually, and can relock after a genuine section break.
+- Starting without a consistent beat no longer launches a fast percussion-style pattern. The system plays slower/free-time support while it evaluates rhythm.
+- Removed the previous automatic silence cutoff (4.8 s); keeps playing last harmony during intentional breaks **by default**. It does not stop just because a source audio file ended.
+- Manual Stop now provides a short fade-out with a final sustained harmony.
+- Two additional advanced switches: **Follow the worship leader's pace**, **Keep playing when singing stops**. Both are enabled by default and not required for Simple View.
+- Live diagnostics indicate whether beat-following is waiting, stable, manual, or continuing instrumentally.
+- Updated PWA cache name for redeployment.
 
-## Boundaries and deployment safety
+## Testing
 
-- The software does **not** recognize song titles from audio, understand lyrics, train itself from recordings, follow exact live chord progressions, or reliably detect a live song transition. The chord and key analysis are still heuristics.
-- The service-flow style changes are only approximate; beat detection and phrase prediction need field testing and deeper model work.
-- A powerful laptop microphone may still hear the app through the PA, making chord inference inaccurate. Avoid feedback and monitor levels.
-- Real grand-piano samples are fetched from the Tone.js Salamander recordings only when enabled; if unavailable the synth still plays. Salamander recordings credited to Alexander Holm (CC BY 3.0). The microphone input or chosen file never goes to an external AI service.
-- The app is static; stores user preferences and saved manual song arrangements locally in the browser. Does not store uploaded audio recordings.
-- This is not safety-critical equipment but a bad sound can disrupt a service: always rehearse, use a human monitor and retain a stop button.
+`npm test` runs Node built-in harmony and tempo tests. Tests cover slow-beat acquisition, short rhythmic clutter, gradual adjustment, pauses, and a clear new tempo after a section break. An in-browser test with a **self-generated 60 BPM chord/percussion WAV with a silent tail** confirmed the audio file started output, the performance continued after the file ended, and Stop ended the session. Test input was synthetic and is not included in the shipping ZIP. Audio tests do not measure artistic correctness.
 
-## Testing evidence
+## Important limitations
 
-Tested with Chromium headless + Web Audio using a self-generated multichord WAV and a short excerpt extracted locally from one of the provided tutorial videos. Both triggered sound-generation events and measurable audio output. Percussion-only input was also tested; it could produce provisional harmony, so never infer musical correctness from the presence of sound alone.
+- **Still heuristic, not neural AI.** Neither these patches nor the 11 tutorial references trained a live machine-learning model. The app cannot yet reliably infer tempo from free-rhythm/acapella singing, align every attack to a live drummer's beat phase, recognize songs or accurately follow all spontaneous chord/key changes.
+- A strong instrumental beat can be tracked, but unpredictable phrases, room echoes, crowd noise and a laptop mic may fool beat/harmony detection. A human must monitor live trials and be ready to press Stop.
+- Tone.js-like audio generation here remains browser-based; samples downloaded from external CC BY 3.0 Salamander when enabled. The local recording and microphone content are not sent to an AI API.
+- For a genuine production-grade autonomous musician, we need a beat/phase synchronizer and song structure/chord tracking on permissioned, accurately annotated stems/MIDI recordings, plus extensive low-latency rehearsal evaluation.
 
-Those checks verify **functional signal routing**, not accuracy across your full song library or live church conditions. The real-world acceptance test needs multiple uninterrupted rehearsals with known songs, key changes, hardware and PA setup, timing measurements, and musician evaluation of harmony and bass.
+## Technical notes
 
-## How to run automated tests
-
-`node --test tests/*.test.mjs`
-
-This tool is an exploratory aid for live accompaniment, not a verified autonomous band member.
+No build step or paid runtime dependencies. Static JS modules: `app.js`, `music-intelligence.js`, `pace-follow.js`. Manifest and service worker support offline-cached app shell. Microphone permission requires HTTPS. No user account or server APIs.

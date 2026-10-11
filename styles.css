@@ -71,3 +71,10 @@ body[data-view="simple"] .listening-panel{max-width:100%}
 /* Contrast polish for the original dark cards */
 .panel h2, .quick-panel h2, .controls-panel h2, .performance-panel h2 {color:#f6f2ff}
 .panel .mini-label, .quick-panel .mini-label {color:#c5adfa}
+
+/* v1.1 · Live conductor status; preserves the v1 professional layout */
+.continuity-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.continuity-strip span{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid #3b455b;background:#202635;border-radius:9px;color:#cbbcff;font-size:10px;font-weight:800;letter-spacing:.15px}
+#paceStatus[data-state=locked]{background:#17332c;color:#9fe6ce;border-color:#356a5a}
+#paceStatus[data-state=manual]{background:#3d2c46;color:#e4caff;border-color:#715283}
+#breakStatus{color:#e8d49f;background:#322d25;border-color:#5f5240}

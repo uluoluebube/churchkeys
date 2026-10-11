@@ -1,4 +1,5 @@
 import {HarmonicTracker, detectChord} from './music-intelligence.js';
+import {PaceFollower} from './pace-follow.js';
 /* ChurchKeys Beta v0.5 — Service Flow & Bass Lab
  * No paid API, server secrets, song crawling, or uploaded audio.
  * Live pitch/key estimation remains experimental, NOT live song recognition.
@@ -15,13 +16,14 @@ const MINOR = [0,2,3,5,7,8,10];
 const KEY_MAJOR_PROFILE = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
 const KEY_MINOR_PROFILE = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
 const STYLE_PROGRAMS = {auto:{bpm:76,label:'Follow the service'},worship:{bpm:76,label:'Gentle worship'},praise:{bpm:129,label:'Praise groove'},highlife:{bpm:129,label:'Highlife praise'},ariaria:{bpm:152,label:'Ariaria praise'}}; // Tempo suggestions, not exact transcriptions.
-const defaults = {mode:'auto',style:'auto',instrument:'piano',bassLevel:65,bassEnabled:true,bassFeel:'anchored',smartFills:true,volume:35,sensitivity:55,echoReduction:true, guidedKey:'0:major',progression:'1544',guidedBpm:80,energy:60,fills:true,samples:true};
+const defaults = {mode:'auto',style:'auto',instrument:'piano',bassLevel:65,bassEnabled:true,bassFeel:'anchored',smartFills:true,volume:35,sensitivity:55,echoReduction:true, guidedKey:'0:major',progression:'1544',guidedBpm:80,energy:60,fills:true,samples:true,followTempo:true,continueBreaks:true};
 let prefs = {...defaults};
 try { const saved=JSON.parse(safeStorage.getItem('churchkeys-preferences-v1')||'null'); if(saved && typeof saved==='object') prefs={...defaults,...saved}; } catch {}
 let displayView=safeStorage.getItem('churchkeys-display-view')==='musician'?'musician':'simple';
 const SAMPLE_BASE = 'https://tonejs.github.io/audio/salamander/';
 const SAMPLE_MAP = {'C2':36,'A2':45,'Ds3':51,'Fs3':54,'A3':57,'C4':60,'Ds4':63,'Fs4':66,'A4':69,'C5':72,'Ds5':75,'Fs5':78,'A5':81};
 const tracker = new HarmonicTracker();
+const pace = new PaceFollower(70);
 const churchSongs = (() => { try { const a=JSON.parse(safeStorage.getItem('churchkeys-arrangements-v2')||'[]');return Array.isArray(a)?a.slice(0,80):[]; } catch{return [];} })();
 const state = {
   running:false, demo:false, preview:false, audioCtx:null, master:null, limiter:null, analyser:null, silence:null,
@@ -31,7 +33,7 @@ const state = {
   key:null, keyConfidence:0, recentEvents:0, lastVoicedAt:0, lastAnalysis:0, lastGuessAt:0,
   bpmDetected:null, bpmTap:null, onsetTimes:[], lastOnset:0, priorRms:0, lastVisual:0,
   playingStyle:'worship', candidateStyle:null, candidateSince:0, lastMusicAt:0, lastOnsetAt:0,
-  sourceMode:'mic', sourceStartedAt:0, audioSeenAt:0, fileNode:null, filePlayer:null, fileUrl:null, fileMonitor:null, outputNotes:0, provisional:false, lastDecisionAt:0, lastDebugAt:0, keySwitchCandidate:null, keySwitchSince:0, runningReason:'', outputRms:0, peakOutputRms:0, outputAnalyser:null, outputBuffer:null, spectrum:null, trackedChord:null, stagePreview:false, flowStage:0, grooveConfidence:'waiting', bpmStable:null, bpmLastUpdate:0, lastStageChange:0,
+  sourceMode:'mic', sourceStartedAt:0, audioSeenAt:0, fileNode:null, filePlayer:null, fileUrl:null, fileMonitor:null, outputNotes:0, provisional:false, lastDecisionAt:0, lastDebugAt:0, keySwitchCandidate:null, keySwitchSince:0, runningReason:'', outputRms:0, peakOutputRms:0, outputAnalyser:null, outputBuffer:null, spectrum:null, trackedChord:null, stagePreview:false, flowStage:0, grooveConfidence:'waiting', bpmStable:null, bpmLastUpdate:0, lastStageChange:0, lastObservedBeat:0, lastHarmonicEvidenceAt:0, hasPlayed:false, instrumentalHold:false, fading:false,
   audioBuffer:null, pitchBuffer:null, pianoSamples:new Map(), samplesPending:false, samplesFailed:false, frameId:0, diagnostic:'', status:'Standby'
 };
 const showLog = msg => { $('logText').textContent=msg; };
@@ -54,7 +56,7 @@ function init(){
     showLog('Selected '+(STYLE_PROGRAMS[style]?.label||style)+'. Start playing to listen, or choose Hear an example groove.');
   });
   $('quickStartBtn').addEventListener('click',()=>startSession($('sourceMode').value));
-  $('quickStopBtn').addEventListener('click',stopSession);
+  $('quickStopBtn').addEventListener('click',()=>stopSession(true));
   $('quickGrooveBtn').addEventListener('click',()=>startSession('groove'));
   $('quickFlowBtn').addEventListener('click',()=>startSession('flow'));
   $('bassToggleQuick').addEventListener('click',()=>{prefs.bassEnabled=!prefs.bassEnabled;syncBassUI();persist();showLog('Bass guitar '+(prefs.bassEnabled?'enabled':'muted')+'.');});
@@ -67,9 +69,13 @@ function init(){
   $('echoToggle').checked = prefs.echoReduction !== false;
   $('echoToggle').addEventListener('change', async()=>{prefs.echoReduction=$('echoToggle').checked;persist();if(state.running&&state.sourceMode==='mic'){await stopSession();await startSession('mic');}else showLog('Echo reduction saved; it will apply to the next microphone session.');});
   $('demoBtn').addEventListener('click',()=>startSession('demo'));$('grooveBtn').addEventListener('click',()=>startSession('groove'));
-  $('stopBtn').addEventListener('click',()=>stopSession());
+  $('stopBtn').addEventListener('click',()=>stopSession(true));
   $('testChordBtn').addEventListener('click',testChord);
   $('tapBtn').addEventListener('click',tapTempo);$('tapTopBtn').addEventListener('click',tapTempo);
+  $('followTempoToggle').checked=prefs.followTempo!==false;
+  $('continueBreaksToggle').checked=prefs.continueBreaks!==false;
+  $('followTempoToggle').addEventListener('change',()=>{prefs.followTempo=$('followTempoToggle').checked;persist();showLog(prefs.followTempo?'Following reliable live tempo evidence; no sudden speed jumps.':'Tempo following disabled. Manual or starting tempo will be used.');});
+  $('continueBreaksToggle').addEventListener('change',()=>{prefs.continueBreaks=$('continueBreaksToggle').checked;persist();showLog(prefs.continueBreaks?'Continue during vocal breaks is ON. Press Stop to fade out.':'Continue during breaks OFF: accompaniment pauses after input stops.');});
   $('noticeDismiss').addEventListener('click',e=>e.currentTarget.closest('.notice').remove());
   $('modeSelect').addEventListener('click',e=>{const el=e.target.closest('[data-mode]');if(el)selectMode(el.dataset.mode);});
   $('styleSelect').addEventListener('click',e=>{const el=e.target.closest('[data-style]');if(el)selectStyle(el.dataset.style);});
@@ -125,7 +131,7 @@ function showFeel(style,confidence){
 function persist(){try{safeStorage.setItem('churchkeys-preferences-v1',JSON.stringify(prefs));}catch{}}
 function updateValues(){
   $('volumeLabel').textContent=prefs.volume+'%';$('sensitivityLabel').textContent=prefs.sensitivity+'%';$('energyLabel').textContent=prefs.energy+'%';
-  if(state.running&&prefs.mode==='guided'){$('keyValue').textContent=notation(keyFromGuided());$('keyDetail').textContent='Manual guidance';$('bpmValue').textContent=prefs.guidedBpm;}
+  if(state.running&&prefs.mode==='guided'){$('keyValue').textContent=notation(keyFromGuided());$('keyDetail').textContent='Manual guidance';}
   updateMaster();
 }
 function selectMode(mode,save=true){
@@ -175,10 +181,10 @@ async function startSession(type){
       state.fileMonitor.gain.value=$('fileMonitorToggle').checked?.23:0;
       state.fileNode.connect(state.fileMonitor);
       state.fileMonitor.connect(state.audioCtx.destination);
-      player.addEventListener('ended',()=>{if(state.running&&state.sourceMode==='file')stopSession();});
+      player.addEventListener('ended',()=>{if(state.running&&state.sourceMode==='file'){showLog('Recording ended. Holding the last accompaniment until you press Stop.');$('sourceLabel').textContent='RECORDING ENDED · INSTRUMENTAL CONTINUES';state.instrumentalHold=true;}});
       player.addEventListener('error',()=>{if(state.running&&state.sourceMode==='file'){showLog('Could not decode this audio file. Please try an MP3 or WAV.');stopSession();}});
     } else if(type==='demo') {state.demo=true;state.demoStep=0;startDemoMelody();}
-    state.running=true;state.sourceMode=type;state.sourceStartedAt=performance.now();state.audioSeenAt=0;state.outputNotes=0;state.outputRms=0;state.peakOutputRms=0;state.provisional=false;state.keySwitchCandidate=null;state.keySwitchSince=0;state.lastDebugAt=0;state.runningReason='';tracker.reset();state.trackedChord=null;state.demo=type==='demo';state.preview=type==='groove'||type==='flow';state.stagePreview=type==='flow';state.chroma.fill(0);state.recentEvents=0;state.recentPitch=[];state.stablePitch=null;state.key=(prefs.mode==='guided'||state.preview)?keyFromGuided():null;state.pitchMidi=null;state.keyConfidence=0;state.lastVoicedAt=0;state.lastOnset=0;state.onsetTimes=[];state.bpmDetected=type==='demo'?90:null;state.priorRms=0;state.beatIndex=0;state.stepIndex=0;state.barIndex=0;state.currentChord=null;state.previousChord=null;state.voicing=null;state.nextBeatTime=state.audioCtx.currentTime+.2;state.lastAnalysis=0;state.lastMusicAt=0;state.playingStyle=prefs.style==='auto'?'worship':prefs.style;state.candidateStyle=null;state.candidateSince=0;state.flowStage=0;state.bpmStable=null;state.lastStageChange=0;showFeel(state.playingStyle,state.preview?'example, not live':'listening');
+    state.running=true;state.sourceMode=type;state.sourceStartedAt=performance.now();state.audioSeenAt=0;state.outputNotes=0;state.outputRms=0;state.peakOutputRms=0;state.provisional=false;state.keySwitchCandidate=null;state.keySwitchSince=0;state.lastDebugAt=0;state.runningReason='';tracker.reset();state.trackedChord=null;state.demo=type==='demo';state.preview=type==='groove'||type==='flow';state.stagePreview=type==='flow';state.chroma.fill(0);state.recentEvents=0;state.recentPitch=[];state.stablePitch=null;state.key=(prefs.mode==='guided'||state.preview)?keyFromGuided():null;state.pitchMidi=null;state.keyConfidence=0;state.lastVoicedAt=0;state.lastOnset=0;state.onsetTimes=[];state.bpmDetected=type==='demo'?90:null;state.priorRms=0;state.beatIndex=0;state.stepIndex=0;state.barIndex=0;state.currentChord=null;state.previousChord=null;state.voicing=null;state.nextBeatTime=state.audioCtx.currentTime+.2;state.lastAnalysis=0;state.lastMusicAt=0;state.playingStyle=prefs.style==='auto'?'worship':prefs.style;state.candidateStyle=null;state.candidateSince=0;state.flowStage=0;state.bpmStable=null;state.lastStageChange=0;state.lastObservedBeat=0;state.lastHarmonicEvidenceAt=0;state.hasPlayed=false;state.instrumentalHold=false;state.fading=false;state.bpmTap=null;pace.reset(prefs.mode==='guided'?prefs.guidedBpm:70);showFeel(state.playingStyle,state.preview?'example, not live':'listening');
     state.scheduleTimer=setInterval(schedule,35);
     if(type==='file'){await state.filePlayer.play();}
     $('startBtn').disabled=type==='mic';$('demoBtn').disabled=type==='demo';$('grooveBtn').disabled=type==='groove';$('stopBtn').disabled=false;
@@ -187,8 +193,24 @@ async function startSession(type){
     showLog(type==='flow'?'Service Flow demonstration: original worship, praise, highlife and Ariaria arrangements change at bar boundaries. This is NOT live automatic recognition.':type==='file'?'Playing the selected audio file. Acoustic key/chord estimates are experimental; monitor the status and chord display.':type==='groove'?'Playing an example groove without a microphone. Use Stop all to end preview.':type==='demo'?'Demo runs a simulated melody into the pitch detector. This is NOT a real church recording.':'Microphone connected. Your built-in mic works without extra cables. Sing clearly for a few seconds; watch Detected note first.');
   }catch(e){await stopSession();const message=e?.name==='NotAllowedError'?'Microphone permission denied. Enable microphone access in your browser site settings.':e?.message||'Unable to start audio.';showLog(message);setStatus('Input error');}
 }
-async function stopSession(){
-  state.running=false; if(state.scheduleTimer){clearInterval(state.scheduleTimer);state.scheduleTimer=null;}
+async function stopSession(withFade=false){
+  if(state.fading)return;
+  const fade=withFade===true && state.running && state.hasPlayed && !!state.master && !!state.audioCtx;
+  state.fading=fade;
+  state.running=false;
+  if(state.scheduleTimer){clearInterval(state.scheduleTimer);state.scheduleTimer=null;}
+  if(fade){
+    $('quickStopBtn').disabled=true;$('stopBtn').disabled=true;
+    $('playingIndicator').textContent='Fading out';
+    showLog('Ending the session with a gentle 1.5-second fade.');
+    const at=state.audioCtx.currentTime, g=state.master.gain;
+    // A final soft harmony is sustained while fading so a short staccato note
+    // doesn't make the Stop button sound like an abrupt cut.
+    if(state.currentChord&&state.voicing){playRH(state.voicing,at+.015,1.3,.24,3);playPadBed(state.voicing,at+.02,1.35);}
+    g.cancelScheduledValues(at);g.setValueAtTime(g.value,at);g.linearRampToValueAtTime(.00001,at+1.5);
+    await new Promise(resolve=>setTimeout(resolve,1550));
+  }
+  if(state.scheduleTimer){clearInterval(state.scheduleTimer);state.scheduleTimer=null;}
   if(state.demoTimer){clearInterval(state.demoTimer);state.demoTimer=null;}
   if(state.demoVoice){try{state.demoVoice.stop();}catch{}try{state.demoVoice.disconnect();}catch{}state.demoVoice=null;}
   if(state.inputSource){try{state.inputSource.disconnect();}catch{}state.inputSource=null;}
@@ -197,10 +219,11 @@ async function stopSession(){
   if(state.fileMonitor){try{state.fileMonitor.disconnect();}catch{}state.fileMonitor=null;}
   if(state.fileUrl){URL.revokeObjectURL(state.fileUrl);state.fileUrl=null;}
   if(state.micStream){state.micStream.getTracks().forEach(t=>t.stop());state.micStream=null;}
-  stopVoices();state.demo=false;state.preview=false;state.stagePreview=false;state.pitchMidi=null;state.recentPitch=[];state.playingMidi=[];state.currentChord=null;
+  stopVoices();state.fading=false;updateMaster();state.demo=false;state.preview=false;state.stagePreview=false;state.pitchMidi=null;state.recentPitch=[];state.playingMidi=[];state.currentChord=null;
   $('startBtn').disabled=false;$('demoBtn').disabled=false;$('grooveBtn').disabled=false;$('stopBtn').disabled=true;
   $('sourceLabel').textContent='NO AUDIO SOURCE';$('signalText').textContent='Awaiting input';$('noteValue').textContent='—';$('noteDetail').textContent='Waiting for voice';$('keyValue').textContent='—';$('keyDetail').textContent='Learning melody';$('bpmValue').textContent='—';$('signalValue').textContent='0%';$('signalBar').style.width='0%';
   $('chordName').textContent='—';$('chordCaption').textContent='Start listening to begin';$('playingNotes').textContent='No notes yet';
+  $('paceStatus').textContent='WAITING FOR PERFORMANCE';$('paceStatus').dataset.state='waiting';$('breakStatus').textContent='READY FOR MUSIC';
   $('playingIndicator').textContent='Paused';$('playingIndicator').classList.remove('live');setStatus('Standby');$('engineStatus').textContent='READY · SELECT SOURCE & START';$('engineStatus').dataset.level='wait';$('engineDetail').textContent='Stopped · Press Start playing when ready';refreshKeyboard([]);
   showFeel(prefs.style==='auto'?'worship':prefs.style,prefs.style==='auto'?'waiting':'manual');updateQuickControls();showLog('Audio stopped. The microphone is disconnected.');
 }
@@ -274,9 +297,19 @@ function analyse(ts){
   state.analyser.getFloatFrequencyData(state.spectrum);
   const music=tracker.observe(state.spectrum,state.audioCtx.sampleRate,state.analyser.fftSize,performance.now());
   state.trackedChord=music.chord;
-  if(music.tempo && !state.bpmTap){state.bpmDetected=Math.round(music.tempo);state.bpmLastUpdate=performance.now();}
+  // The spectrum tracker supplies tentative pulse events, not a tempo command.
+  // Only stable repeated pulses may alter the scheduler, and changes are rate-limited.
+  if(!state.demo && tracker.lastBeat && tracker.lastBeat!==state.lastObservedBeat){
+    state.lastObservedBeat=tracker.lastBeat;
+    pace.observePulse(tracker.lastBeat);
+  }
+  pace.advance(performance.now());
+  if(pace.locked){state.bpmDetected=Math.round(pace.tempo);state.bpmLastUpdate=pace.lastReliablePulse;}
   const threshold=.0045+(1-prefs.sensitivity/100)*.008;
   const audioActive=result.rms>threshold;
+  // No new verified tonal information: hold the last accompaniment, not a guessed next chord.
+  if(audioActive && (result.pitch!==null && result.clarity>.65 || music.chord?.confidence>.34 && music.total>.15))state.lastHarmonicEvidenceAt=performance.now();
+  state.instrumentalHold=!!(state.hasPlayed && prefs.continueBreaks!==false && state.key && ((state.lastMusicAt>0 && performance.now()-state.lastMusicAt>1700)||(state.lastHarmonicEvidenceAt>0&&performance.now()-state.lastHarmonicEvidenceAt>2400)));
   if(audioActive){if(!state.audioSeenAt)state.audioSeenAt=performance.now();state.lastMusicAt=performance.now();}
   // Start an audible, quiet, provisional accompaniment after sustained music rather than
   // going permanently silent when monophonic pitch detection fails on a full mix.
@@ -314,28 +347,18 @@ function analyse(ts){
     state.lastDebugAt=performance.now();showLog('No audible audio detected. Check that the microphone or chosen file is active, then check input level.');
   }
   if(prefs.mode==='auto'){
-    $('engineStatus').textContent=state.key?(state.provisional?'PROVISIONAL HARMONY — CHECK BY EAR':'FOLLOWING AUDIO · KEY ESTIMATED'):(audioActive?'ANALYZING MUSIC…':'WAITING FOR AUDIBLE MUSIC');
+    $('engineStatus').textContent=state.instrumentalHold?'INSTRUMENTAL CONTINUATION · PRESS STOP':state.key?(state.provisional?'PROVISIONAL HARMONY — CHECK BY EAR':'FOLLOWING AUDIO · KEY ESTIMATED'):(audioActive?'ANALYZING MUSIC…':'WAITING FOR AUDIBLE MUSIC');
     $('engineStatus').dataset.level=state.provisional?'warn':state.key?'good':'wait';
   }else{$('engineStatus').textContent='GUIDED ACCOMPANIMENT';$('engineStatus').dataset.level='good';}
   const volume=cap(result.rms*360,0,100);$('signalValue').textContent=Math.round(volume)+'%';$('signalBar').style.width=volume+'%';
   $('signalText').textContent=result.rms<.012?'Low signal':volume>85?'High input level':'Signal receiving';
   const now=performance.now();
-  // Broad amplitude transient estimate (not robust drum separation).
-  if(!state.demo&&result.rms>.025 && result.rms>state.priorRms*1.55 && now-state.lastOnset>280){
-    if(state.lastOnset)state.onsetTimes.push(now-state.lastOnset);state.lastOnset=now;
-    state.onsetTimes=state.onsetTimes.slice(-10);
-    if(state.onsetTimes.length>=5){const arr=state.onsetTimes.filter(n=>n>=290&&n<=1100).sort((a,b)=>a-b);if(arr.length>=4){let bpm=60000/arr[Math.floor(arr.length/2)];if(bpm<68)bpm*=2;if(bpm>180)bpm/=2;if(bpm>=65&&bpm<=185){
-          // Smooth large tempo jumps; some detected pulses are half/double-time errors.
-          if(state.bpmStable){
-            const options=[bpm,bpm*2,bpm/2].filter(x=>x>=65&&x<=185);
-            bpm=options.sort((a,b)=>Math.abs(a-state.bpmStable)-Math.abs(b-state.bpmStable))[0]||bpm;
-          }
-          state.bpmStable=state.bpmStable===null?bpm:(.78*state.bpmStable+.22*bpm);
-          state.bpmDetected=Math.round(state.bpmStable);state.bpmLastUpdate=now;
-        }}}
-  }
-  state.priorRms=state.priorRms*.65+result.rms*.35;
+  // Do not convert isolated loud syllables into instant BPM changes.
+  // If the source goes quiet, preserve the last measured pace.
   if(!state.demo&&result.rms>.022)state.lastMusicAt=now;
+  $('paceStatus').textContent=state.bpmTap?'MANUAL TEMPO':pace.locked?(performance.now()-pace.lastReliablePulse>4500?'LAST PACE HELD · LISTENING':`FOLLOWING PACE · ${Math.round(pace.tempo)} BPM`):'LISTENING FOR RHYTHM · SPACIOUS PLAYING';
+  $('paceStatus').dataset.state=state.bpmTap?'manual':pace.locked?'locked':'waiting';
+  $('breakStatus').textContent=state.instrumentalHold?'INSTRUMENTAL CONTINUES · PRESS STOP TO END':state.hasPlayed?'FOLLOWING PERFORMANCE':'READY FOR MUSIC';
   if(result.pitch!==null){
     state.recentPitch.push(Math.round(result.pitch));state.recentPitch=state.recentPitch.slice(-5);
     const votes=new Map();for(const m of state.recentPitch)votes.set(m,(votes.get(m)||0)+1);
@@ -352,12 +375,16 @@ function analyse(ts){
   const effectiveKey=(prefs.mode==='guided'||state.preview)?keyFromGuided():state.key;
   $('keyValue').textContent=notation(effectiveKey);
   $('keyDetail').textContent=(prefs.mode==='guided'||state.preview)?'Manual guidance':(state.key?(state.provisional?'Provisional estimate':'Estimated from full mix'):'Analyzing harmony');
-  $('bpmValue').textContent=(prefs.mode==='guided'||state.preview)?String(prefs.guidedBpm):(state.bpmTap||state.bpmDetected?String(state.bpmTap||state.bpmDetected):'~'+(STYLE_PROGRAMS[prefs.style]?.bpm||76));
+  $('bpmValue').textContent=state.preview?String(prefs.guidedBpm):state.bpmTap?String(state.bpmTap):prefs.followTempo!==false && pace.locked?String(Math.round(pace.tempo)):'—';
 }
 function currentBpm(){
   if(state.stagePreview)return STYLE_PROGRAMS[state.playingStyle]?.bpm||76;
-  if(state.preview||prefs.mode==='guided')return cap(prefs.guidedBpm,45,210);
-  return cap(state.bpmTap||state.bpmDetected||(STYLE_PROGRAMS[state.playingStyle]?.bpm||76),45,210);
+  if(state.preview)return cap(prefs.guidedBpm,45,210);
+  if(state.bpmTap)return cap(state.bpmTap,44,190);
+  if(prefs.followTempo!==false && pace.locked)return cap(pace.tempo,44,190);
+  // When there is no trustworthy beat, avoid rushing with a fast style preset.
+  // The unmetered accompaniment routine handles this case musically.
+  return cap(prefs.mode==='guided'?prefs.guidedBpm:70,44,190);
 }
 function chordFromDegree(key,degree){
   const scale=key.mode==='minor'?MINOR:MAJOR;
@@ -372,6 +399,7 @@ function chordFromDegree(key,degree){
   return {name:NOTES[(key.root+rootShift)%12]+suffix,notes,pc:notes.map(m=>m%12),degree};
 }
 function nextChord(){
+  if(state.instrumentalHold&&state.currentChord)return state.currentChord;
   const key=(prefs.mode==='guided'||state.preview)?keyFromGuided():state.key;
   if(!key)return null;
   const guidedProgression=CHORD_DEGREES[prefs.progression]||CHORD_DEGREES['1544'];
@@ -403,7 +431,7 @@ function nextChord(){
 // v0.4: Only choose style when an observable tempo estimate persists.
 // This is a heuristic, not audio source separation, AI service classification, or song recognition.
 function inferredStyle(){
-  if(!state.bpmDetected || performance.now()-state.bpmLastUpdate>9000)return null;
+  if(!pace.locked || !state.bpmDetected || performance.now()-state.bpmLastUpdate>9000)return null;
   const bpm=state.bpmDetected;
   if(bpm<99)return 'worship';
   if(bpm<119)return 'praise';
@@ -596,6 +624,14 @@ function arrangeStep(step,time,sixteenth,beatLen){
   }
   bassWalk(step,time,sixteenth,beatLen);
 }
+function arrangeSafeStep(step,time,beatLen){
+  // No verified beat yet: offer spacious support, not an arbitrary 120-BPM groove.
+  if(step!==0||!state.currentChord||!state.voicing)return;
+  const notes=state.voicing;
+  playRH(notes,time,beatLen*3.6,.27,3);
+  playPadBed(notes,time,beatLen*3.9);
+  if(prefs.bassEnabled)playBass(adjustedBass(state.currentChord),time,beatLen*2.8,.25);
+}
 function schedule(){
   if(!state.running||!state.audioCtx||state.audioCtx.state!=='running')return;
   const ctx=state.audioCtx,bpm=currentBpm(),beatLen=60/bpm,sixteenth=beatLen/4;
@@ -603,13 +639,18 @@ function schedule(){
   let passes=0;
   while(state.nextBeatTime<ctx.currentTime+.12&&passes++<14){
     const step=state.stepIndex;const when=state.nextBeatTime;
-    const canPlay=state.preview||prefs.mode==='guided'||(state.key&&performance.now()-state.lastMusicAt<4800);
+    // Once music has started, keep accompanying during a vocalist's intentional pause.
+    // Stop is controlled by a person, unless the optional hold setting is disabled.
+    const canPlay=state.preview||prefs.mode==='guided'||(state.key && (prefs.continueBreaks!==false || performance.now()-state.lastMusicAt<4800));
     if(step===0){
       applyStyleAtBar();
-      if(canPlay){const next=nextChord();if(next){state.previousChord=state.currentChord;state.currentChord=next;state.voicing=closeVoicing(next);state.barIndex++;$('chordName').textContent=next.name;$('chordCaption').textContent=state.preview?'Arranged groove · audition':prefs.mode==='guided'?'Guided groove · your selected progression':'Estimated harmony · verify by ear';}}
+      if(canPlay){const next=nextChord();if(next){state.hasPlayed=true;state.previousChord=state.currentChord;state.currentChord=next;state.voicing=closeVoicing(next);state.barIndex++;$('chordName').textContent=next.name;$('chordCaption').textContent=state.preview?'Arranged groove · audition':state.instrumentalHold?'Instrumental break · last harmony held':prefs.mode==='guided'?'Guided groove · your selected progression':'Estimated harmony · verify by ear';}}
       else {state.currentChord=null;state.voicing=null;$('chordName').textContent='—';$('chordCaption').textContent=state.key?'Waiting for singing':'Listening for musical key';}
     }
-    if(canPlay&&state.currentChord)arrangeStep(step,when,sixteenth,beatLen);
+    if(canPlay&&state.currentChord){
+      if(!state.preview&&prefs.followTempo!==false&&!pace.locked&&!state.bpmTap)arrangeSafeStep(step,when,beatLen);
+      else arrangeStep(step,when,sixteenth,beatLen);
+    }
     if(step%4===0)queueBeatVisual(step/4,when);
     state.nextBeatTime+=sixteenth;state.stepIndex=(step+1)%16;
   }
@@ -756,5 +797,5 @@ function draw(){
   state.frameId=requestAnimationFrame(draw);
 }
 function exportPrefs(){const blob=new Blob([JSON.stringify({app:'ChurchKeys Beta',exportedAt:new Date().toISOString(),preferences:prefs},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='churchkeys-church-preferences.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);showLog('Exported this browser’s settings as JSON (no recordings included).');}
-window.__churchKeysTest = () => ({running:state.running,source:state.sourceMode,key:state.key,bpm:currentBpm(),outputs:state.outputNotes,outputRms:state.outputRms,peakOutputRms:state.peakOutputRms,pitchEvents:state.recentEvents,observedFrames:tracker.frames,musicalFrames:tracker.toneFrames,provisional:state.provisional,audioSeenAt:state.audioSeenAt,playedChord:state.currentChord?.name||null});
+window.__churchKeysTest = () => ({running:state.running,source:state.sourceMode,key:state.key,bpm:currentBpm(),outputs:state.outputNotes,outputRms:state.outputRms,peakOutputRms:state.peakOutputRms,pitchEvents:state.recentEvents,observedFrames:tracker.frames,musicalFrames:tracker.toneFrames,provisional:state.provisional,audioSeenAt:state.audioSeenAt,playedChord:state.currentChord?.name||null,pace:pace.snapshot(),instrumentalHold:state.instrumentalHold,hasPlayed:state.hasPlayed});
 init();
