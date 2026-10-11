@@ -1,4 +1,4 @@
-/* ChurchKeys Beta v0.4 — Service Flow & Bass Lab
+/* ChurchKeys Beta v0.5 — Service Flow & Bass Lab
  * No paid API, server secrets, song crawling, or uploaded audio.
  * Live pitch/key estimation remains experimental, NOT live song recognition.
  * Richer gospel-style rhythm arrangements are heuristic MIDI-like note patterns.
@@ -7,13 +7,13 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const NOTES = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
-const CHORD_DEGREES = {1544:[0,4,5,3],1451:[0,3,4,0],1645:[0,5,3,4],1454:[0,3,4,3],2511:[1,4,0,0],1625:[0,5,1,4],1415:[0,3,0,4],1345:[0,2,3,4]};
+const CHORD_DEGREES = {1544:[0,4,5,3],1451:[0,3,4,0],1645:[0,5,3,4],1454:[0,3,4,3],2511:[1,4,0,0],1625:[0,5,1,4],1415:[0,3,0,4],1545:[0,4,3,4],1345:[0,2,3,4]};
 const MAJOR = [0,2,4,5,7,9,11];
 const MINOR = [0,2,3,5,7,8,10];
 const KEY_MAJOR_PROFILE = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
 const KEY_MINOR_PROFILE = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
 const STYLE_PROGRAMS = {auto:{bpm:76,label:'Follow the service'},worship:{bpm:76,label:'Gentle worship'},praise:{bpm:129,label:'Praise groove'},highlife:{bpm:129,label:'Highlife praise'},ariaria:{bpm:152,label:'Ariaria praise'}}; // Tempo suggestions, not exact transcriptions.
-const defaults = {mode:'auto',style:'auto',instrument:'piano',bassLevel:65,bassEnabled:true,volume:35,sensitivity:55,echoReduction:true, guidedKey:'0:major',progression:'1544',guidedBpm:80,energy:60,fills:true,samples:true};
+const defaults = {mode:'auto',style:'auto',instrument:'piano',bassLevel:65,bassEnabled:true,bassFeel:'anchored',smartFills:true,volume:35,sensitivity:55,echoReduction:true, guidedKey:'0:major',progression:'1544',guidedBpm:80,energy:60,fills:true,samples:true};
 let prefs = {...defaults};
 try { const saved=JSON.parse(localStorage.getItem('churchkeys-preferences-v1')||'null'); if(saved && typeof saved==='object') prefs={...defaults,...saved}; } catch {}
 let displayView=localStorage.getItem('churchkeys-display-view')==='musician'?'musician':'simple';
@@ -41,7 +41,7 @@ const notation = key => key ? NOTES[key.root]+' '+(key.mode==='minor'?'minor':'m
 function init(){
   for(let root=0;root<12;root++)for(const mode of ['major','minor']){const opt=document.createElement('option');opt.value=`${root}:${mode}`;opt.textContent=`${NOTES[root]} ${mode}`;$('guidedKey').append(opt);}
   $('guidedKey').value=prefs.guidedKey;$('progressionSelect').value=prefs.progression;$('guidedBpm').value=prefs.guidedBpm;$('instrumentSelect').value=prefs.instrument;
-  $('volumeSlider').value=prefs.volume;$('bassLevel').value=prefs.bassLevel;$('sensitivitySlider').value=prefs.sensitivity;$('energySlider').value=prefs.energy;$('fillsToggle').checked=prefs.fills!==false;$('samplesToggle').checked=prefs.samples!==false;updateValues();refreshSongs(); selectMode(prefs.mode,false);selectStyle(prefs.style,false);createKeyboard();
+  $('volumeSlider').value=prefs.volume;$('bassLevel').value=prefs.bassLevel;$('sensitivitySlider').value=prefs.sensitivity;$('energySlider').value=prefs.energy;$('fillsToggle').checked=prefs.fills!==false;$('smartFillsToggle').checked=prefs.smartFills!==false;$('bassFeel').value=['anchored','walking','driving'].includes(prefs.bassFeel)?prefs.bassFeel:'anchored';$('samplesToggle').checked=prefs.samples!==false;updateValues();refreshSongs(); selectMode(prefs.mode,false);selectStyle(prefs.style,false);createKeyboard();
   applyDisplayView();
   $('studioToggle').addEventListener('click',()=>{displayView=displayView==='simple'?'musician':'simple';localStorage.setItem('churchkeys-display-view',displayView);applyDisplayView();});
   $('quickStyle').value=prefs.style;
@@ -78,6 +78,8 @@ function init(){
   $('deleteSongBtn').addEventListener('click',deleteArrangement);
   $('energySlider').addEventListener('input',()=>{prefs.energy=Number($('energySlider').value);updateValues();persist();});
   $('fillsToggle').addEventListener('change',()=>{prefs.fills=$('fillsToggle').checked;persist();});
+  $('smartFillsToggle').addEventListener('change',()=>{prefs.smartFills=$('smartFillsToggle').checked;persist();});
+  $('bassFeel').addEventListener('change',()=>{prefs.bassFeel=$('bassFeel').value;persist();showLog('Bass approach: '+$('bassFeel').selectedOptions[0].text+'.');});
   $('samplesToggle').addEventListener('change',()=>{prefs.samples=$('samplesToggle').checked;persist();if(prefs.samples&&state.audioCtx)loadPianoSamples();});
   $('bassLevel').addEventListener('input',()=>{prefs.bassLevel=Number($('bassLevel').value);syncBassUI();persist();});
   $('bassEnabled').addEventListener('change',()=>{prefs.bassEnabled=$('bassEnabled').checked;syncBassUI();persist();});
@@ -367,20 +369,44 @@ function nextBassApproach(){
   const target=adjustedBass(chordFromDegree(key,degree));
   return target-1;
 }
+/* Original bass studies informed by tutorial concepts, not note-for-note transcriptions.
+ * Bass runs independently of melody/right-hand chord triggers; it anchors the groove.
+ */
 function bassWalk(step,time,sixteenth,beatLen){
   if(prefs.bassEnabled===false||prefs.bassLevel<1||!state.currentChord)return;
-  const style=state.playingStyle;
-  const root=adjustedBass(state.currentChord);
+  const style=state.playingStyle, root=adjustedBass(state.currentChord);
+  const feel=['anchored','walking','driving'].includes(prefs.bassFeel)?prefs.bassFeel:'anchored';
   if(style==='worship'){
-    if(step===12 && state.barIndex%2===0)playBass(root+12,time,beatLen*.75,.24);
+    if(step===12 && state.barIndex%2===0)playBass(root+12,time,beatLen*.75,.20);
+    if(feel==='walking' && step===15 && state.barIndex%2===0){
+      const approach=nextBassApproach();if(approach!==null)playBass(approach,time,sixteenth*.85,.17);
+    }
     return;
   }
+  // All playing styles retain a dependable low foundation even when right-hand fills play.
   if((style==='praise'||style==='highlife') && step===7)playBass(root+7,time,beatLen*.38,.29);
   if(style==='ariaria'&&(step===6||step===14))playBass(root+7,time,beatLen*.28,.36);
+  if(feel==='walking'){
+    // Sparse original passing-note exercises; do not conflict with the bar's strong beats.
+    if(step===3)playBass(root+7,time,sixteenth*.94,.20);
+    if(step===11)playBass(root+12,time,sixteenth*.94,.21);
+    if(step===13 && state.barIndex%2===0)playBass(root+9,time,sixteenth*.8,.16);
+  } else if(feel==='driving'){
+    if(step===2 || step===10)playBass(root+12,time,sixteenth*.88,.25);
+    if(step===6 || step===14)playBass(root+7,time,sixteenth*.88,.22);
+  }
   if(step===15){
     const passing=nextBassApproach();
-    if(passing!==null)playBass(passing,time,sixteenth*.83,.24);
+    if(passing!==null)playBass(passing,time,sixteenth*.83,feel==='walking'?.29:.24);
   }
+}
+function shouldPlayFill(){
+  if(prefs.fills===false)return false;
+  if(prefs.smartFills===false||state.preview||state.demo)return true;
+  // Only apply when we have recently detected stable musical pitch in a live session.
+  // This is not vocal source separation, and the system may hear another instrument.
+  if(state.recentEvents<15||!state.lastVoicedAt)return true;
+  return performance.now()-state.lastVoicedAt>650;
 }
 function playPadBed(notes,time,duration){
   const ctx=state.audioCtx;if(!ctx)return;
@@ -443,7 +469,7 @@ function arrangeStep(step,time,sixteenth,beatLen){
   const chord=state.currentChord;if(!chord)return;
   const notes=state.voicing||closeVoicing(chord),bass=adjustedBass(chord);
   const energy=cap((prefs.energy||60)/100,0,1);
-  const fills=prefs.fills!==false;
+  const fills=shouldPlayFill();
   if(state.playingStyle==='worship'){
     // Broken-chord piano with sustained harmonic support and occasional right-hand answers.
     if(step===0){playRH(notes,time,beatLen*3.4,.42+energy*.16,3);playBass(bass,time,beatLen*2.4,.32+energy*.15);playPadBed(notes,time,beatLen*3.7);}

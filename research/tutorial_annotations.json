@@ -1,0 +1,223 @@
+{
+  "schema_version": "0.1",
+  "method": "Five visual frames sampled per video plus extra progression shots; audio onset/chroma features from three 16-second excerpts per video. This is preliminary study, not full note-level transcription or supervised model training.",
+  "annotations": [
+    {
+      "id": "V01",
+      "filename": "#43_How_to_Play_African_Nigerian_Praise_Songs_For_Beginners_4.mp4",
+      "duration_seconds": 961.0,
+      "focus": "Major-scale fluency and chord-tone movement",
+      "observations": [
+        "An instructor demonstrates major-scale exercises and labeled intervals using a camera-on-keyboard layout.",
+        "An on-screen example explicitly labels F Major 3rd."
+      ],
+      "stamps": [
+        "01:26",
+        "04:00",
+        "07:12"
+      ],
+      "confidence": "high for displayed educational labels; low for exact played notes",
+      "model_use": "Scale-degree aware fills; avoid playing every detected singer note verbatim.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V02",
+      "filename": "5 Most Used African PRAISE Progressions For Beginners.mp4",
+      "duration_seconds": 468.5,
+      "focus": "Piano progression families in African praise",
+      "observations": [
+        "The visible progression demonstrations include 1\u20134\u20135\u20134, 1\u20134\u20131\u20135, 1\u20135\u20134\u20135, and 1\u20136\u20132\u20135.",
+        "Instructors illustrate repeating progressions with both hands."
+      ],
+      "stamps": [
+        "00:26",
+        "02:36",
+        "03:54",
+        "04:20",
+        "06:04",
+        "06:30"
+      ],
+      "confidence": "high for on-screen roman-numeral progressions; no claim that each fits every song",
+      "model_use": "Add original accompaniment templates for these generic progression families; use optional guidance or verified harmony, not assume they identify the song.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V03",
+      "filename": "African_Praise_Piano_Play_Through_CCI_Abuja_Nigerian_Gospel_St.mp4",
+      "duration_seconds": 348.8,
+      "focus": "Full two-hand praise keyboard play-through",
+      "observations": [
+        "Continuous two-hand playing and highlighted keyboard notes are visible.",
+        "The demonstrations appear to move through multiple registers."
+      ],
+      "stamps": [
+        "00:31",
+        "02:36",
+        "04:56"
+      ],
+      "confidence": "moderate for hand independence; low for pitch-identification from frames",
+      "model_use": "Decouple bass register events from right-hand chord stabs and fills.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V04",
+      "filename": "HOW_TO_PLAY_NIGERIAN_WORSHIP_SONGS_ON_PIANO_CHORDS_BASSLINES.mp4",
+      "duration_seconds": 1519.9,
+      "focus": "Worship chords, basslines and spacious articulation",
+      "observations": [
+        "A top-down live keyboard performance shows distinct lower/upper hand positions and changes of voicing.",
+        "Sustained musical phrases appear across multiple moments."
+      ],
+      "stamps": [
+        "02:16",
+        "11:23",
+        "21:31"
+      ],
+      "confidence": "moderate for hand/register motions; chord labeling not verified",
+      "model_use": "Quieter long bass foundation, held chord voicings and optional minimal passing notes for worship.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V05",
+      "filename": "Learn_How_to_vamp_Naija_Praise_songs_African_styles_Piano_Tuto.mp4",
+      "duration_seconds": 421.1,
+      "focus": "Vamping and slash-chord inversions",
+      "observations": [
+        "Top-down piano playing with overlaid keyboard note visualization.",
+        "An on-screen harmonic label F/A is legible at approximately 05:57."
+      ],
+      "stamps": [
+        "00:37",
+        "03:09",
+        "05:57"
+      ],
+      "confidence": "high for F/A displayed label; cannot automatically generalize full progression",
+      "model_use": "Bass-on-inversion chord voicing as an optional future engine feature; smooth right-hand voice-leading.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V06",
+      "filename": "Learn_How_to_vamp_Nigeria_Praise_songs_like_a_Pro_in_key_of_F#_.mp4",
+      "duration_seconds": 164.9,
+      "focus": "Fast praise vamps in a specified teaching key",
+      "observations": [
+        "Two-hand keyboard demonstration on a compact controller.",
+        "The title states the example is in F-sharp; that is a teaching key, not a general rule for praise music."
+      ],
+      "stamps": [
+        "00:14",
+        "01:14",
+        "02:20"
+      ],
+      "confidence": "high for title; moderate for hand pattern",
+      "model_use": "Transpose exercises to any key; separate vamp pattern from fixed pitch.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V07",
+      "filename": "NIGERIA PRAISE PIANO TUTORIAL 2 (Baseline while soloing).mp4",
+      "duration_seconds": 312.5,
+      "focus": "Maintaining bass while soloing",
+      "observations": [
+        "The on-screen lesson explicitly emphasizes maintaining the same bassline.",
+        "Two-hand playing shows low accompaniment concurrent with upper-hand lead movement."
+      ],
+      "stamps": [
+        "00:28",
+        "02:20",
+        "04:25"
+      ],
+      "confidence": "high for explicitly taught concept",
+      "model_use": "Keep bass scheduling on its own clock while the right-hand melody and fills vary.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V08",
+      "filename": "Nigerian Praise songs breakdown.mp4",
+      "duration_seconds": 960.1,
+      "focus": "Scale degree and solfege guidance on praise pieces",
+      "observations": [
+        "Keyboard visualization accompanies degree/solfege teaching labels.",
+        "Multiple song sections are shown, but chord labels cannot be verified from five isolated still frames."
+      ],
+      "stamps": [
+        "01:26",
+        "04:00",
+        "07:12",
+        "10:24",
+        "13:36"
+      ],
+      "confidence": "high for visible solfege instruction; limited pitch extraction",
+      "model_use": "Use scale degrees for melody compatibility scoring and check chord hypotheses against a stable tonal center.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V09",
+      "filename": "Nigerian_Praise_LIVE_Arrangement_Powerful_Piano_Solo_by_Johns.mp4",
+      "duration_seconds": 180.1,
+      "focus": "Layered arrangement with piano solo",
+      "observations": [
+        "A DAW arrangement timeline with separate colored lanes and a virtual keyboard display is visible.",
+        "The performance is presented as part of a multi-track arrangement."
+      ],
+      "stamps": [
+        "00:16",
+        "01:21",
+        "02:33"
+      ],
+      "confidence": "high for multi-track visual structure",
+      "model_use": "Treat piano, bass, pads and rhythmic texture as independent arrangement layers; balance them rather than doubling the lead.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V10",
+      "filename": "POPULAR_AFRICAN_PRAISE_STEM_BREAKDOWN_INSIDE_THE_MIND_OF_A_GE.mp4",
+      "duration_seconds": 1468.2,
+      "focus": "Stem/track breakdown of African praise",
+      "observations": [
+        "The screen displays a DAW with several discrete arrangement tracks.",
+        "A displayed project tempo appears close to 140 BPM (visual reading only, not universal style labeling)."
+      ],
+      "stamps": [
+        "02:12",
+        "06:07",
+        "11:00",
+        "15:54",
+        "20:47"
+      ],
+      "confidence": "moderate for displayed tempo, high for stem organization",
+      "model_use": "Use multi-layer accompaniment with controlled introduction, dropout and build-ups; plan for stem-level training data.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    },
+    {
+      "id": "V11",
+      "filename": "Popular_Igbo_Praise_Lead_Bass_Lines_Tutorials_Breakdown_Exp.mp4",
+      "duration_seconds": 890.2,
+      "focus": "Igbo praise lead bassline approaches",
+      "observations": [
+        "Hands-on keyboard demonstration with independent lower and upper ranges.",
+        "The instructor repeatedly demonstrates lead/bass relationships at several time points."
+      ],
+      "stamps": [
+        "01:20",
+        "06:40",
+        "09:38",
+        "12:36"
+      ],
+      "confidence": "moderate for role separation; exact bass transcription not verified",
+      "model_use": "Add bass approach options: steady foundation, walking approach, and octave/fifth emphasis as original generic exercises.",
+      "source_media_included": false,
+      "copyright_status": "Creator permission required before dataset redistribution or model training; instructional observation only."
+    }
+  ]
+}

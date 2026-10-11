@@ -1,0 +1,739 @@
+[
+  {
+    "video": "V01",
+    "title": "#43_How_to_Play_African_Nigerian_Praise_Songs_For_Beginners_4.mp4",
+    "segments": [
+      {
+        "time_start_s": 173.0,
+        "time_end_s": 189.0,
+        "mean_rms": 0.1875,
+        "detected_transients_per_sec": 4.44,
+        "chroma_energy": [
+          0.209,
+          0.173,
+          0.199,
+          0.235,
+          0.117,
+          0.2,
+          0.18,
+          0.305,
+          0.274,
+          0.178,
+          0.315,
+          0.184
+        ]
+      },
+      {
+        "time_start_s": 499.7,
+        "time_end_s": 515.7,
+        "mean_rms": 0.1863,
+        "detected_transients_per_sec": 4.12,
+        "chroma_energy": [
+          0.475,
+          0.262,
+          0.219,
+          0.2,
+          0.352,
+          0.222,
+          0.213,
+          0.385,
+          0.186,
+          0.158,
+          0.18,
+          0.258
+        ]
+      },
+      {
+        "time_start_s": 759.2,
+        "time_end_s": 775.2,
+        "mean_rms": 0.1316,
+        "detected_transients_per_sec": 4.06,
+        "chroma_energy": [
+          0.475,
+          0.44,
+          0.388,
+          0.376,
+          0.327,
+          0.302,
+          0.328,
+          0.366,
+          0.421,
+          0.441,
+          0.471,
+          0.488
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V02",
+    "title": "5 Most Used African PRAISE Progressions For Beginners.mp4",
+    "segments": [
+      {
+        "time_start_s": 84.3,
+        "time_end_s": 100.3,
+        "mean_rms": 0.3344,
+        "detected_transients_per_sec": 4.38,
+        "chroma_energy": [
+          0.58,
+          0.255,
+          0.326,
+          0.192,
+          0.243,
+          0.197,
+          0.19,
+          0.297,
+          0.178,
+          0.131,
+          0.198,
+          0.522
+        ]
+      },
+      {
+        "time_start_s": 243.6,
+        "time_end_s": 259.6,
+        "mean_rms": 0.3546,
+        "detected_transients_per_sec": 4.5,
+        "chroma_energy": [
+          0.597,
+          0.279,
+          0.174,
+          0.15,
+          0.229,
+          0.284,
+          0.219,
+          0.325,
+          0.241,
+          0.172,
+          0.175,
+          0.506
+        ]
+      },
+      {
+        "time_start_s": 370.1,
+        "time_end_s": 386.1,
+        "mean_rms": 0.2849,
+        "detected_transients_per_sec": 3.94,
+        "chroma_energy": [
+          0.455,
+          0.248,
+          0.306,
+          0.209,
+          0.177,
+          0.187,
+          0.145,
+          0.212,
+          0.214,
+          0.359,
+          0.253,
+          0.375
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V03",
+    "title": "African_Praise_Piano_Play_Through_CCI_Abuja_Nigerian_Gospel_St.mp4",
+    "segments": [
+      {
+        "time_start_s": 62.8,
+        "time_end_s": 78.8,
+        "mean_rms": 0.1359,
+        "detected_transients_per_sec": 5.0,
+        "chroma_energy": [
+          0.424,
+          0.289,
+          0.29,
+          0.311,
+          0.487,
+          0.573,
+          0.253,
+          0.287,
+          0.254,
+          0.37,
+          0.324,
+          0.287
+        ]
+      },
+      {
+        "time_start_s": 181.4,
+        "time_end_s": 197.4,
+        "mean_rms": 0.1359,
+        "detected_transients_per_sec": 4.19,
+        "chroma_energy": [
+          0.444,
+          0.288,
+          0.275,
+          0.229,
+          0.326,
+          0.435,
+          0.23,
+          0.36,
+          0.269,
+          0.388,
+          0.359,
+          0.321
+        ]
+      },
+      {
+        "time_start_s": 275.6,
+        "time_end_s": 291.6,
+        "mean_rms": 0.1386,
+        "detected_transients_per_sec": 5.62,
+        "chroma_energy": [
+          0.566,
+          0.414,
+          0.422,
+          0.334,
+          0.471,
+          0.594,
+          0.305,
+          0.398,
+          0.332,
+          0.375,
+          0.422,
+          0.415
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V04",
+    "title": "HOW_TO_PLAY_NIGERIAN_WORSHIP_SONGS_ON_PIANO_CHORDS_BASSLINES.mp4",
+    "segments": [
+      {
+        "time_start_s": 273.6,
+        "time_end_s": 289.6,
+        "mean_rms": 0.1008,
+        "detected_transients_per_sec": 1.38,
+        "chroma_energy": [
+          0.565,
+          0.16,
+          0.18,
+          0.079,
+          0.221,
+          0.474,
+          0.168,
+          0.164,
+          0.122,
+          0.462,
+          0.209,
+          0.16
+        ]
+      },
+      {
+        "time_start_s": 790.3,
+        "time_end_s": 806.3,
+        "mean_rms": 0.1231,
+        "detected_transients_per_sec": 1.88,
+        "chroma_energy": [
+          0.324,
+          0.138,
+          0.207,
+          0.094,
+          0.275,
+          0.554,
+          0.155,
+          0.168,
+          0.184,
+          0.437,
+          0.254,
+          0.144
+        ]
+      },
+      {
+        "time_start_s": 1200.7,
+        "time_end_s": 1216.7,
+        "mean_rms": 0.1188,
+        "detected_transients_per_sec": 1.56,
+        "chroma_energy": [
+          0.538,
+          0.177,
+          0.239,
+          0.088,
+          0.21,
+          0.338,
+          0.157,
+          0.236,
+          0.089,
+          0.276,
+          0.239,
+          0.174
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V05",
+    "title": "Learn_How_to_vamp_Naija_Praise_songs_African_styles_Piano_Tuto.mp4",
+    "segments": [
+      {
+        "time_start_s": 75.8,
+        "time_end_s": 91.8,
+        "mean_rms": 0.0585,
+        "detected_transients_per_sec": 3.38,
+        "chroma_energy": [
+          0.37,
+          0.329,
+          0.367,
+          0.408,
+          0.391,
+          0.329,
+          0.315,
+          0.389,
+          0.325,
+          0.283,
+          0.285,
+          0.336
+        ]
+      },
+      {
+        "time_start_s": 219.0,
+        "time_end_s": 235.0,
+        "mean_rms": 0.0693,
+        "detected_transients_per_sec": 2.75,
+        "chroma_energy": [
+          0.474,
+          0.27,
+          0.424,
+          0.278,
+          0.296,
+          0.269,
+          0.271,
+          0.414,
+          0.261,
+          0.303,
+          0.239,
+          0.451
+        ]
+      },
+      {
+        "time_start_s": 332.7,
+        "time_end_s": 348.7,
+        "mean_rms": 0.0683,
+        "detected_transients_per_sec": 4.06,
+        "chroma_energy": [
+          0.511,
+          0.263,
+          0.352,
+          0.238,
+          0.338,
+          0.333,
+          0.214,
+          0.415,
+          0.234,
+          0.3,
+          0.278,
+          0.315
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V06",
+    "title": "Learn_How_to_vamp_Nigeria_Praise_songs_like_a_Pro_in_key_of_F#_.mp4",
+    "segments": [
+      {
+        "time_start_s": 29.7,
+        "time_end_s": 45.7,
+        "mean_rms": 0.1183,
+        "detected_transients_per_sec": 3.81,
+        "chroma_energy": [
+          0.189,
+          0.259,
+          0.341,
+          0.365,
+          0.299,
+          0.454,
+          0.494,
+          0.393,
+          0.27,
+          0.22,
+          0.284,
+          0.255
+        ]
+      },
+      {
+        "time_start_s": 85.7,
+        "time_end_s": 101.7,
+        "mean_rms": 0.1479,
+        "detected_transients_per_sec": 3.0,
+        "chroma_energy": [
+          0.146,
+          0.332,
+          0.238,
+          0.32,
+          0.186,
+          0.317,
+          0.402,
+          0.198,
+          0.367,
+          0.171,
+          0.291,
+          0.284
+        ]
+      },
+      {
+        "time_start_s": 130.3,
+        "time_end_s": 146.3,
+        "mean_rms": 0.1948,
+        "detected_transients_per_sec": 3.81,
+        "chroma_energy": [
+          0.121,
+          0.229,
+          0.174,
+          0.306,
+          0.198,
+          0.403,
+          0.363,
+          0.123,
+          0.178,
+          0.103,
+          0.318,
+          0.256
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V07",
+    "title": "NIGERIA PRAISE PIANO TUTORIAL 2 (Baseline while soloing).mp4",
+    "segments": [
+      {
+        "time_start_s": 56.2,
+        "time_end_s": 72.2,
+        "mean_rms": 0.0749,
+        "detected_transients_per_sec": 4.5,
+        "chroma_energy": [
+          0.091,
+          0.243,
+          0.374,
+          0.213,
+          0.435,
+          0.16,
+          0.284,
+          0.327,
+          0.154,
+          0.237,
+          0.083,
+          0.133
+        ]
+      },
+      {
+        "time_start_s": 162.5,
+        "time_end_s": 178.5,
+        "mean_rms": 0.0892,
+        "detected_transients_per_sec": 4.38,
+        "chroma_energy": [
+          0.115,
+          0.221,
+          0.381,
+          0.243,
+          0.425,
+          0.194,
+          0.206,
+          0.27,
+          0.134,
+          0.164,
+          0.1,
+          0.168
+        ]
+      },
+      {
+        "time_start_s": 246.9,
+        "time_end_s": 262.9,
+        "mean_rms": 0.0646,
+        "detected_transients_per_sec": 3.75,
+        "chroma_energy": [
+          0.188,
+          0.214,
+          0.301,
+          0.256,
+          0.4,
+          0.255,
+          0.265,
+          0.231,
+          0.207,
+          0.307,
+          0.202,
+          0.255
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V08",
+    "title": "Nigerian Praise songs breakdown.mp4",
+    "segments": [
+      {
+        "time_start_s": 172.8,
+        "time_end_s": 188.8,
+        "mean_rms": 0.0525,
+        "detected_transients_per_sec": 4.12,
+        "chroma_energy": [
+          0.175,
+          0.532,
+          0.168,
+          0.154,
+          0.113,
+          0.312,
+          0.453,
+          0.237,
+          0.288,
+          0.146,
+          0.148,
+          0.146
+        ]
+      },
+      {
+        "time_start_s": 499.3,
+        "time_end_s": 515.3,
+        "mean_rms": 0.0709,
+        "detected_transients_per_sec": 4.75,
+        "chroma_energy": [
+          0.132,
+          0.392,
+          0.134,
+          0.139,
+          0.129,
+          0.124,
+          0.378,
+          0.204,
+          0.25,
+          0.153,
+          0.259,
+          0.208
+        ]
+      },
+      {
+        "time_start_s": 758.5,
+        "time_end_s": 774.5,
+        "mean_rms": 0.0764,
+        "detected_transients_per_sec": 3.94,
+        "chroma_energy": [
+          0.165,
+          0.504,
+          0.169,
+          0.239,
+          0.108,
+          0.207,
+          0.448,
+          0.201,
+          0.103,
+          0.082,
+          0.219,
+          0.22
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V09",
+    "title": "Nigerian_Praise_LIVE_Arrangement_Powerful_Piano_Solo_by_Johns.mp4",
+    "segments": [
+      {
+        "time_start_s": 32.4,
+        "time_end_s": 48.4,
+        "mean_rms": 0.1705,
+        "detected_transients_per_sec": 4.88,
+        "chroma_energy": [
+          0.189,
+          0.205,
+          0.422,
+          0.558,
+          0.245,
+          0.261,
+          0.186,
+          0.431,
+          0.35,
+          0.255,
+          0.54,
+          0.228
+        ]
+      },
+      {
+        "time_start_s": 93.7,
+        "time_end_s": 109.7,
+        "mean_rms": 0.2035,
+        "detected_transients_per_sec": 4.94,
+        "chroma_energy": [
+          0.576,
+          0.223,
+          0.232,
+          0.335,
+          0.161,
+          0.269,
+          0.249,
+          0.61,
+          0.4,
+          0.217,
+          0.239,
+          0.233
+        ]
+      },
+      {
+        "time_start_s": 142.3,
+        "time_end_s": 158.3,
+        "mean_rms": 0.1961,
+        "detected_transients_per_sec": 5.62,
+        "chroma_energy": [
+          0.357,
+          0.269,
+          0.47,
+          0.46,
+          0.262,
+          0.435,
+          0.211,
+          0.352,
+          0.327,
+          0.228,
+          0.309,
+          0.218
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V10",
+    "title": "POPULAR_AFRICAN_PRAISE_STEM_BREAKDOWN_INSIDE_THE_MIND_OF_A_GE.mp4",
+    "segments": [
+      {
+        "time_start_s": 264.3,
+        "time_end_s": 280.3,
+        "mean_rms": 0.1195,
+        "detected_transients_per_sec": 3.06,
+        "chroma_energy": [
+          0.383,
+          0.253,
+          0.249,
+          0.216,
+          0.293,
+          0.353,
+          0.242,
+          0.2,
+          0.175,
+          0.221,
+          0.305,
+          0.33
+        ]
+      },
+      {
+        "time_start_s": 763.5,
+        "time_end_s": 779.5,
+        "mean_rms": 0.0782,
+        "detected_transients_per_sec": 3.94,
+        "chroma_energy": [
+          0.347,
+          0.282,
+          0.39,
+          0.319,
+          0.409,
+          0.665,
+          0.266,
+          0.347,
+          0.18,
+          0.323,
+          0.231,
+          0.164
+        ]
+      },
+      {
+        "time_start_s": 1159.9,
+        "time_end_s": 1175.9,
+        "mean_rms": 0.0883,
+        "detected_transients_per_sec": 4.0,
+        "chroma_energy": [
+          0.311,
+          0.265,
+          0.388,
+          0.292,
+          0.387,
+          0.304,
+          0.154,
+          0.237,
+          0.164,
+          0.228,
+          0.175,
+          0.172
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  },
+  {
+    "video": "V11",
+    "title": "Popular_Igbo_Praise_Lead_Bass_Lines_Tutorials_Breakdown_Exp.mp4",
+    "segments": [
+      {
+        "time_start_s": 160.2,
+        "time_end_s": 176.2,
+        "mean_rms": 0.0524,
+        "detected_transients_per_sec": 2.0,
+        "chroma_energy": [
+          0.317,
+          0.354,
+          0.224,
+          0.17,
+          0.409,
+          0.144,
+          0.093,
+          0.152,
+          0.256,
+          0.321,
+          0.324,
+          0.309
+        ]
+      },
+      {
+        "time_start_s": 462.9,
+        "time_end_s": 478.9,
+        "mean_rms": 0.0634,
+        "detected_transients_per_sec": 2.38,
+        "chroma_energy": [
+          0.117,
+          0.172,
+          0.095,
+          0.112,
+          0.24,
+          0.125,
+          0.261,
+          0.164,
+          0.227,
+          0.288,
+          0.225,
+          0.266
+        ]
+      },
+      {
+        "time_start_s": 703.3,
+        "time_end_s": 719.3,
+        "mean_rms": 0.1838,
+        "detected_transients_per_sec": 5.06,
+        "chroma_energy": [
+          0.263,
+          0.417,
+          0.262,
+          0.34,
+          0.376,
+          0.14,
+          0.079,
+          0.066,
+          0.164,
+          0.214,
+          0.188,
+          0.392
+        ]
+      }
+    ],
+    "caution": "These observations mix instruction speech and musical audio; not verified keyboard-specific features or training labels."
+  }
+]
