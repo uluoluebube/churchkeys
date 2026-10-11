@@ -1,88 +1,50 @@
-# ChurchKeys — free church pilot (Beta v0.1)
+# ChurchKeys Groove Lab — Beta v0.2
 
-A self-contained, browser-based **experimental live accompaniment prototype**. It uses the microphone to estimate a prominent melody pitch and generates simple harmonic keyboard patterns. It also has a more predictable, optional Guided mode.
+A free, no-login, GitHub → Netlify-deployable experimental virtual keyboardist. **This is not a trained AI keyboardist**. The improved version adds a **16-step arranged performance engine**: chord inversions and voice leading, a worship arpeggio feel, syncopated praise-style keyboard stabs, moving bass notes, melodic call-and-response, energy and fill controls, and an optional real sampled grand piano. It still has the old basic singing-pitch detector and tentative chord estimator, and **will not reliably follow an unfamiliar song automatically**.
 
-**Important:** This is a proof of concept, **not a production-ready AI church keyboardist**. It does **not** reliably recognize songs, transcribe complete arrangements, separate instruments, learn from recorded services, or guarantee correct chord choices. Automatic key detection and generated harmonies can be wrong, particularly when drums, multiple singers, and loud speakers bleed into the microphone. **Test in a rehearsal at low volume before attempting any use during a service.** Keep a person near the laptop to stop it if necessary.
+## Fastest way to hear the improvement today
 
-## Quickest first test (no microphone required)
+1. Update all files in your GitHub repo with the contents of this ZIP; Netlify deploys automatically. Keep the `assets/` folder.
+2. Open the Netlify HTTPS URL on a laptop, then press **Ctrl+Shift+R** to force refresh after deploy. Use headphones at low volume first.
+3. Switch to **Guided**. Set a musical key (for example C major), select the chord progression `I · IV · V · I`, and tap or enter the tempo. For praise start experimenting around **110–125 BPM**; for slow worship try **65–80 BPM**. These are illustrative starting points, not a universal Nigerian gospel tempo.
+4. Select **Praise**, raise **Performance energy** to around 70–85%, and enable **Melodic fills**. Click **♫ Hear groove**. The app will play a continuous auto-arranged groove *without needing a microphone*. Change Worship and Praise while it plays; press **Stop all** to end.
+5. Leave **Use recorded grand piano** enabled. With internet access, the app downloads CC BY 3.0 grand piano samples and switches to sampled piano sound when available. The `Real piano samples` status changes to `ready`. If unavailable, the original synth fallback works without internet. The recorded samples require a network connection and are *not packaged in the ZIP*.
+6. For a song your church performs regularly, enter its name under **Church song memory**, confirm the key, progression, tempo and style, and click **Save this arrangement**. Later choose the saved entry and **Load**. This is a local preset, **not** automatic online song lookup or ML training.
+7. Only after auditioning in Guided mode should you switch to **Autonomous** → **Start listening**. It still attempts crude note/key detection from your laptop's built-in microphone. It might misread chords; the rhythmic accompaniment will sound better, but the *musical intelligence of the ear is still experimental*.
 
-1. Open the live Netlify site in Chrome or Edge on a laptop.
-2. Set your computer output to headphones at low volume.
-3. Click **Test piano**. You should hear a C-major chord.
-4. Click **Try demo**. This injects a **simulated melody** into the pitch detector while the keyboard synthesizer plays audible accompaniment. The demo melody is *not* recorded church audio or genuine song recognition.
-5. Change to **Guided**, choose a key, chord progression, and tempo. Try Worship and Praise styles.
-6. Press **Stop all** before changing audio cables.
+## Audio wiring for a small church
 
-## Test with live singing — laptop microphone, no external mic needed
+- **Input:** laptop's built-in microphone, with browser permission. No extra mic required.
+- **Output:** laptop headphone/AUX to mixer or church speakers; the operating system picks the output.
+- Test with headphones first and keep the PA at a safe low volume. Avoid the laptop hearing its own keyboard from the speakers. Echo reduction is imperfect. Keep **Stop all** within reach. Test in rehearsals; do **not** depend on this beta during a live service.
+- For *Guided* accompaniment at an actual rehearsal, set musical key/progression/BPM manually; the app performs the arrangement without someone striking keyboard notes. It will not automatically follow an unplanned chord change.
 
-**Yes: ChurchKeys supports the laptop’s built-in microphone.** The microphone listens to the singer and drummer **through the air**, without any microphone cable. The app’s generated keyboard sound goes through the laptop's **normal audio output**, so you may connect an AUX cable from the laptop headphone/output jack to the church mixer/speakers. The sound system is **output only**, not a required input.
+## Deploy to Netlify from GitHub
 
-1. Open the HTTPS Netlify site in current **Chrome or Edge** on your laptop. Plug in headphones first and keep the output volume low. Check the keyboard with **Test piano**.
-2. Under **Listening microphone**, leave **System default mic (often built-in)**, or choose **Built-in Microphone / Microphone Array** once the browser has microphone permission. **Important:** plugging an AUX cable into a combination headset port sometimes changes the laptop's default microphone. Choose the built-in option manually in that case, or change Windows/macOS sound input settings.
-3. Select **Autonomous**, **Worship**, and a low output volume. Click **Start listening**, then **Allow microphone** when your browser asks. Sing one clear note at a time near the laptop and watch **Detected note**. Next, sing a simple sequence of notes and watch **Estimated key**. The estimate is tentative, not reliable song recognition.
-4. If you cannot hear the app, check your operating system’s audio **output** selection. With AUX plugged in, select the headphone/line-out output and confirm **Test piano** goes to the expected speaker. The app does not select AUX automatically; the operating system does.
-5. The **Reduce speaker echo** option is enabled by default. It asks the browser to reduce acoustic feedback from the app. Echo cancellation is imperfect and may interfere with singing or musical signals. If the note detector performs poorly with echo reduction enabled, try disabling it and retest at a safe, low volume.
-6. Only after testing with headphones should you gradually test sound through the church speakers, still at **low volume**. Place the laptop as far from the speakers as practical, and aim it towards the singer rather than the PA. Do not crank the microphone sensitivity when audio is feeding back.
-7. Try **Guided** mode if the key/chords are wrong: choose a key, tempo and progression. Guided mode plays the specified progression automatically. It does not discover the right song from a microphone.
-8. Have someone supervise and be ready to click **Stop all**. **Do not rely on this experimental version for a live church service**, and do not connect it to a loud PA without a controlled rehearsal first.
+1. Extract ZIP and upload `index.html`, `app.js`, `styles.css`, `manifest.webmanifest`, `sw.js`, `netlify.toml`, `.gitignore`, this `README.md`, and `assets/favicon.svg` to your existing repository **at the root**. Replace the old files.
+2. Netlify linked to the GitHub repo redeploys automatically. Build command: blank. Publish directory: `.`.
+3. Hard refresh your church's Netlify URL after deployment; the service worker has a new cache version.
+4. For local test, run `python -m http.server 8000` from this folder and open `http://localhost:8000`.
 
-**Practical limitation:** A built-in laptop mic simultaneously hearing loud drums, a choir, congregation sounds and the keyboard coming from speakers is much less accurate than a clear vocal microphone/mixer feed. The free prototype supports the built-in mic, but it cannot guarantee reliable separation or accompaniment in that environment.
+## Privacy, cost, licensing
 
-### What works in this release
+- No login, server, API key, subscription, backend, or uploaded microphone recording. Microphone analysis happens locally in the browser.
+- Saved arrangements are browser `localStorage` entries on that device. The Export preferences button exports preferences **but does not include saved songs**. Do not clear browser data if you need the saved arrangements; they don't sync between computers.
+- Optional recorded grand piano uses **Salamander Grand Piano V3** by **Alexander Holm**, licensed **Creative Commons Attribution 3.0**. Original project: https://github.com/sfzinstruments/SalamanderGrandPiano ; CDN samples: https://tonejs.github.io/audio/salamander/ . The synth fallback requires no outside audio samples. License: https://creativecommons.org/licenses/by/3.0/ .
+- Song names and manually entered chord progressions are saved locally. We do not download commercial performances or scrape videos.
+- If the browser is offline, music generation continues using built-in oscillators; the optional sample sounds may be unavailable until downloaded while online.
 
-- Built-in piano, organ, and pad oscillator-based sounds (no sample downloads or paid APIs).
-- Built-in laptop microphone capture (no input cable needed), optional other microphones, browser echo-reduction toggle, live waveform, pitch display, tentative major/minor key inference, rough onset-based BPM estimates.
-- Autonomous mode attempts simple chord accompaniment from melody notes and an expected progression; will be wrong on some songs.
-- Guided mode offers a key, tempo, and progression, plus **Tap tempo**.
-- Worship (sustained) and Praise (rhythmic) accompaniment patterns.
-- Local browser settings, downloadable JSON preferences, offline caching of core files.
-- Simulated melody demo, sound test, stop-all, input selection, output and mic sensitivity.
+## Critical limitations
 
-### What does NOT work yet
+- **Not a trained AI performer:** Chord progressions and highlife/gospel-inspired patterns are fixed rules with limited variation, not transcription or stylistic learning from musicians.
+- **Not song recognition:** Typing a song name recalls a saved arrangement; it does not search the internet or identify songs automatically.
+- **Unreliable musical listening in loud rooms:** The simple pitch/key detector cannot cleanly separate multiple singers, drums, and PA bleed. Beat detection is very rudimentary and can drift.
+- **Missing expressive interpretation:** A skilled keyboardist would follow phrasing, dynamics, fills and section changes more accurately. Use feedback from your church's experienced musicians to design and test distinct, original MIDI-style patterns.
+- **Browser scheduling:** Keep the tab visible, prevent sleep, and test latency on actual hardware before plugging into a PA.
 
-- Learning each church's musical habits over time (local settings **are not machine learning**).
-- Identifying named songs, advanced Nigerian praise styles, improvisation/fills, robust drum tracking or beat sync, or automatic song modulation detection.
-- Professional sampled acoustic piano sounds, guaranteed low latency, and reliable audio separation in an actual live service.
-- External MIDI keyboards, recording/replay, account logins, cloud learning and model fine-tuning.
+## Next development steps
 
-## Deploy to GitHub → Netlify (no build tool)
-
-This repo is **plain HTML, CSS and JavaScript**, not React and has no npm dependencies.
-
-1. Download and unzip the project. Keep `index.html`, `app.js`, `styles.css`, `netlify.toml`, `sw.js`, `manifest.webmanifest`, and the `assets` folder together.
-2. On [GitHub](https://github.com/new), create a new repository, for example `churchkeys-beta`.
-3. In the empty repository click **uploading an existing file** / **Add file → Upload files**. Upload all the project files and `assets/favicon.svg` preserving its subfolder. **Commit changes** to the `main` branch.
-4. Go to [Netlify](https://app.netlify.com/), select **Add new project → Import an existing project**, choose **GitHub**, authorize the connection, and select your repository.
-5. For this static site, use **Build command: (leave blank)** and **Publish directory: `.` (repository root)**. The included `netlify.toml` also specifies this.
-6. Click **Deploy / Publish**. Netlify gives you an `https://...netlify.app` link. Open it in Chrome or Edge.
-7. Later edits pushed to the GitHub `main` branch automatically deploy to your Netlify site.
-
-Alternative: log into Netlify and drag the unzipped project folder into **Deploy manually** for a quick one-off test. Connecting GitHub afterward enables automatic updates.
-
-### Local run (optional)
-
-Open a terminal **inside this folder** and run:
-
-```sh
-python -m http.server 8000
-```
-
-Visit `http://localhost:8000` in Chrome or Edge. Browser microphone capture is allowed on HTTPS and `localhost`, but not on arbitrary insecure `http://` pages. Don't rely on opening `index.html` as a `file://` URL.
-
-## Privacy, audio & stability
-
-- This build has **no backend, database, subscriptions, API keys, analytics or audio upload**.
-- Microphone audio stays in the running browser tab. The only saved information is settings in `localStorage`. Exported JSON contains settings only, not recordings.
-- Fonts may be fetched from Google when online; the app's functionality works with fallback fonts offline.
-- The PWA service worker caches the basic files after the first successful HTTPS load. Reload the site once online before relying on offline operation; browser storage can still be cleared, so verify offline behavior before a service.
-- The browser can throttle audio timing if its tab is in the background. Keep it foregrounded and disable device sleep.
-- Headphones first! Echo/feedback and microphone distortion produce incorrect notes. Always use the PA/mixer safely and at conservative levels.
-
-## Next milestones
-
-1. Improve pitch tracking and robust key estimation with live church rehearsal measurements.
-2. Add audio-file based testing and recorded sample annotations (with permission).
-3. Create a proper rhythm tracker and harmony estimator before trying advanced Nigerian praise accompaniment.
-4. Introduce church profiles and reproducible corrections. Later, evaluate real model training or fine-tuning.
-
-The application code is deliberately split into `index.html`, `styles.css`, and `app.js` so you can update it easily from your GitHub repository.
+1. Collect short **permissioned** recordings of worship and praise rehearsals, preferably microphone-only vocal plus an isolated keyboard reference (MIDI recording from a volunteer musician is even better).
+2. Have an experienced Nigerian gospel keyboardist transcribe/record original chord voicings, praise bass grooves, fills, and authentic accompaniment patterns. Build a reusable style library.
+3. Train or improve chord and beat recognition against labeled recordings. Confirm that the system gets the correct harmonies *before* adding any cloud AI.
+4. Add a secure church-profile account system and explicit opt-in learning from corrected arrangements.
