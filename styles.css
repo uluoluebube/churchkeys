@@ -78,3 +78,7 @@ body[data-view="simple"] .listening-panel{max-width:100%}
 #paceStatus[data-state=locked]{background:#17332c;color:#9fe6ce;border-color:#356a5a}
 #paceStatus[data-state=manual]{background:#3d2c46;color:#e4caff;border-color:#715283}
 #breakStatus{color:#e8d49f;background:#322d25;border-color:#5f5240}
+
+/* New follower status wraps naturally without crowding mobile Simple View. */
+#followStatus{max-width:100%;white-space:normal;line-height:1.45;color:#dfcef9;background:#2c2640;border-color:#584773}
+#followStatus[data-state="locked"]{background:#24382f;color:#c1e8d6;border-color:#446c5a}

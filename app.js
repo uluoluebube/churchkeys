@@ -1,8 +1,9 @@
 import {HarmonicTracker, detectChord} from './music-intelligence.js';
 import {PaceFollower} from './pace-follow.js';
+import {PerformanceFollower} from './performance-follower.js';
 /* ChurchKeys Beta v0.5 — Service Flow & Bass Lab
  * No paid API, server secrets, song crawling, or uploaded audio.
- * Live pitch/key estimation remains experimental, NOT live song recognition.
+ * v1.2: probabilistic chord-state and beat-phase following; NOT a neural model or song recognition.
  * Richer gospel-style rhythm arrangements are heuristic MIDI-like note patterns.
  * Optional Salamander piano recordings are CC BY 3.0 (Alexander Holm).
  */
@@ -24,6 +25,7 @@ const SAMPLE_BASE = 'https://tonejs.github.io/audio/salamander/';
 const SAMPLE_MAP = {'C2':36,'A2':45,'Ds3':51,'Fs3':54,'A3':57,'C4':60,'Ds4':63,'Fs4':66,'A4':69,'C5':72,'Ds5':75,'Fs5':78,'A5':81};
 const tracker = new HarmonicTracker();
 const pace = new PaceFollower(70);
+const follower = new PerformanceFollower();
 const churchSongs = (() => { try { const a=JSON.parse(safeStorage.getItem('churchkeys-arrangements-v2')||'[]');return Array.isArray(a)?a.slice(0,80):[]; } catch{return [];} })();
 const state = {
   running:false, demo:false, preview:false, audioCtx:null, master:null, limiter:null, analyser:null, silence:null,
@@ -33,7 +35,7 @@ const state = {
   key:null, keyConfidence:0, recentEvents:0, lastVoicedAt:0, lastAnalysis:0, lastGuessAt:0,
   bpmDetected:null, bpmTap:null, onsetTimes:[], lastOnset:0, priorRms:0, lastVisual:0,
   playingStyle:'worship', candidateStyle:null, candidateSince:0, lastMusicAt:0, lastOnsetAt:0,
-  sourceMode:'mic', sourceStartedAt:0, audioSeenAt:0, fileNode:null, filePlayer:null, fileUrl:null, fileMonitor:null, outputNotes:0, provisional:false, lastDecisionAt:0, lastDebugAt:0, keySwitchCandidate:null, keySwitchSince:0, runningReason:'', outputRms:0, peakOutputRms:0, outputAnalyser:null, outputBuffer:null, spectrum:null, trackedChord:null, stagePreview:false, flowStage:0, grooveConfidence:'waiting', bpmStable:null, bpmLastUpdate:0, lastStageChange:0, lastObservedBeat:0, lastHarmonicEvidenceAt:0, hasPlayed:false, instrumentalHold:false, fading:false,
+  followState:null, sourceMode:'mic', sourceStartedAt:0, audioSeenAt:0, fileNode:null, filePlayer:null, fileUrl:null, fileMonitor:null, outputNotes:0, provisional:false, lastDecisionAt:0, lastDebugAt:0, keySwitchCandidate:null, keySwitchSince:0, runningReason:'', outputRms:0, peakOutputRms:0, outputAnalyser:null, outputBuffer:null, spectrum:null, trackedChord:null, stagePreview:false, flowStage:0, grooveConfidence:'waiting', bpmStable:null, bpmLastUpdate:0, lastStageChange:0, lastObservedBeat:0, lastHarmonicEvidenceAt:0, hasPlayed:false, instrumentalHold:false, fading:false,
   audioBuffer:null, pitchBuffer:null, pianoSamples:new Map(), samplesPending:false, samplesFailed:false, frameId:0, diagnostic:'', status:'Standby'
 };
 const showLog = msg => { $('logText').textContent=msg; };
@@ -184,7 +186,7 @@ async function startSession(type){
       player.addEventListener('ended',()=>{if(state.running&&state.sourceMode==='file'){showLog('Recording ended. Holding the last accompaniment until you press Stop.');$('sourceLabel').textContent='RECORDING ENDED · INSTRUMENTAL CONTINUES';state.instrumentalHold=true;}});
       player.addEventListener('error',()=>{if(state.running&&state.sourceMode==='file'){showLog('Could not decode this audio file. Please try an MP3 or WAV.');stopSession();}});
     } else if(type==='demo') {state.demo=true;state.demoStep=0;startDemoMelody();}
-    state.running=true;state.sourceMode=type;state.sourceStartedAt=performance.now();state.audioSeenAt=0;state.outputNotes=0;state.outputRms=0;state.peakOutputRms=0;state.provisional=false;state.keySwitchCandidate=null;state.keySwitchSince=0;state.lastDebugAt=0;state.runningReason='';tracker.reset();state.trackedChord=null;state.demo=type==='demo';state.preview=type==='groove'||type==='flow';state.stagePreview=type==='flow';state.chroma.fill(0);state.recentEvents=0;state.recentPitch=[];state.stablePitch=null;state.key=(prefs.mode==='guided'||state.preview)?keyFromGuided():null;state.pitchMidi=null;state.keyConfidence=0;state.lastVoicedAt=0;state.lastOnset=0;state.onsetTimes=[];state.bpmDetected=type==='demo'?90:null;state.priorRms=0;state.beatIndex=0;state.stepIndex=0;state.barIndex=0;state.currentChord=null;state.previousChord=null;state.voicing=null;state.nextBeatTime=state.audioCtx.currentTime+.2;state.lastAnalysis=0;state.lastMusicAt=0;state.playingStyle=prefs.style==='auto'?'worship':prefs.style;state.candidateStyle=null;state.candidateSince=0;state.flowStage=0;state.bpmStable=null;state.lastStageChange=0;state.lastObservedBeat=0;state.lastHarmonicEvidenceAt=0;state.hasPlayed=false;state.instrumentalHold=false;state.fading=false;state.bpmTap=null;pace.reset(prefs.mode==='guided'?prefs.guidedBpm:70);showFeel(state.playingStyle,state.preview?'example, not live':'listening');
+    state.running=true;state.sourceMode=type;state.sourceStartedAt=performance.now();state.audioSeenAt=0;state.outputNotes=0;state.outputRms=0;state.peakOutputRms=0;state.provisional=false;state.keySwitchCandidate=null;state.keySwitchSince=0;state.lastDebugAt=0;state.runningReason='';tracker.reset();follower.reset();state.followState=null;state.trackedChord=null;state.demo=type==='demo';state.preview=type==='groove'||type==='flow';state.stagePreview=type==='flow';state.chroma.fill(0);state.recentEvents=0;state.recentPitch=[];state.stablePitch=null;state.key=(prefs.mode==='guided'||state.preview)?keyFromGuided():null;state.pitchMidi=null;state.keyConfidence=0;state.lastVoicedAt=0;state.lastOnset=0;state.onsetTimes=[];state.bpmDetected=type==='demo'?90:null;state.priorRms=0;state.beatIndex=0;state.stepIndex=0;state.barIndex=0;state.currentChord=null;state.previousChord=null;state.voicing=null;state.nextBeatTime=state.audioCtx.currentTime+.2;state.lastAnalysis=0;state.lastMusicAt=0;state.playingStyle=prefs.style==='auto'?'worship':prefs.style;state.candidateStyle=null;state.candidateSince=0;state.flowStage=0;state.bpmStable=null;state.lastStageChange=0;state.lastObservedBeat=0;state.lastHarmonicEvidenceAt=0;state.hasPlayed=false;state.instrumentalHold=false;state.fading=false;state.bpmTap=null;pace.reset(prefs.mode==='guided'?prefs.guidedBpm:70);showFeel(state.playingStyle,state.preview?'example, not live':'listening');
     state.scheduleTimer=setInterval(schedule,35);
     if(type==='file'){await state.filePlayer.play();}
     $('startBtn').disabled=type==='mic';$('demoBtn').disabled=type==='demo';$('grooveBtn').disabled=type==='groove';$('stopBtn').disabled=false;
@@ -223,7 +225,7 @@ async function stopSession(withFade=false){
   $('startBtn').disabled=false;$('demoBtn').disabled=false;$('grooveBtn').disabled=false;$('stopBtn').disabled=true;
   $('sourceLabel').textContent='NO AUDIO SOURCE';$('signalText').textContent='Awaiting input';$('noteValue').textContent='—';$('noteDetail').textContent='Waiting for voice';$('keyValue').textContent='—';$('keyDetail').textContent='Learning melody';$('bpmValue').textContent='—';$('signalValue').textContent='0%';$('signalBar').style.width='0%';
   $('chordName').textContent='—';$('chordCaption').textContent='Start listening to begin';$('playingNotes').textContent='No notes yet';
-  $('paceStatus').textContent='WAITING FOR PERFORMANCE';$('paceStatus').dataset.state='waiting';$('breakStatus').textContent='READY FOR MUSIC';
+  $('paceStatus').textContent='WAITING FOR PERFORMANCE';$('paceStatus').dataset.state='waiting';$('breakStatus').textContent='READY FOR MUSIC';if($('followStatus'))$('followStatus').textContent='CHORD & PHRASE FOLLOWER READY';
   $('playingIndicator').textContent='Paused';$('playingIndicator').classList.remove('live');setStatus('Standby');$('engineStatus').textContent='READY · SELECT SOURCE & START';$('engineStatus').dataset.level='wait';$('engineDetail').textContent='Stopped · Press Start playing when ready';refreshKeyboard([]);
   showFeel(prefs.style==='auto'?'worship':prefs.style,prefs.style==='auto'?'waiting':'manual');updateQuickControls();showLog('Audio stopped. The microphone is disconnected.');
 }
@@ -296,17 +298,31 @@ function analyse(ts){
   const result=pitchYin(state.audioBuffer,state.audioCtx.sampleRate);
   state.analyser.getFloatFrequencyData(state.spectrum);
   const music=tracker.observe(state.spectrum,state.audioCtx.sampleRate,state.analyser.fftSize,performance.now());
-  state.trackedChord=music.chord;
   // The spectrum tracker supplies tentative pulse events, not a tempo command.
   // Only stable repeated pulses may alter the scheduler, and changes are rate-limited.
   if(!state.demo && tracker.lastBeat && tracker.lastBeat!==state.lastObservedBeat){
     state.lastObservedBeat=tracker.lastBeat;
     pace.observePulse(tracker.lastBeat);
+    if(pace.locked)follower.beat.observePulse(tracker.lastBeat,pace.tempo,pace.confidence);
   }
   pace.advance(performance.now());
   if(pace.locked){state.bpmDetected=Math.round(pace.tempo);state.bpmLastUpdate=pace.lastReliablePulse;}
   const threshold=.0045+(1-prefs.sensitivity/100)*.008;
   const audioActive=result.rms>threshold;
+  state.followState=follower.observe({nowMs:ts,chroma:music.recent,
+    audible:audioActive && music.total>.025,
+    melodic:audioActive && result.pitch!==null && result.clarity>.7});
+  const harmonyState=state.followState.chords;
+  // Only temporally supported chord states drive automatic harmony; raw per-frame
+  // guesses are shown separately and must not trigger chord changes.
+  state.trackedChord=harmonyState.confident?harmonyState.chord:null;
+  const followLabel=$('followStatus');
+  if(followLabel){
+    const chordLabel=harmonyState.confident?'CHORD ESTIMATE '+harmonyState.chord.name+' (NOT VERIFIED)': 'CHORD UNCERTAIN';
+    const phaseLabel=follower.beat.confidence>=.7?'BEAT GRID ALIGNED':'BEAT PHASE SEARCHING';
+    followLabel.textContent=chordLabel+'  ·  '+phaseLabel+'  ·  '+state.followState.phrase.status.toUpperCase();
+    followLabel.dataset.state=harmonyState.confident?'locked':'waiting';
+  }
   // No new verified tonal information: hold the last accompaniment, not a guessed next chord.
   if(audioActive && (result.pitch!==null && result.clarity>.65 || music.chord?.confidence>.34 && music.total>.15))state.lastHarmonicEvidenceAt=performance.now();
   state.instrumentalHold=!!(state.hasPlayed && prefs.continueBreaks!==false && state.key && ((state.lastMusicAt>0 && performance.now()-state.lastMusicAt>1700)||(state.lastHarmonicEvidenceAt>0&&performance.now()-state.lastHarmonicEvidenceAt>2400)));
@@ -406,14 +422,18 @@ function nextChord(){
   const template=(prefs.mode==='guided'||state.preview)?guidedProgression:(state.playingStyle==='worship'?CHORD_DEGREES['1544']:CHORD_DEGREES['1454']);
   const target=template[state.barIndex%template.length];
   if(prefs.mode==='guided'||state.preview)return chordFromDegree(key,target);
-  // Prefer observed polyphonic chord tones when credible. Smooth changes at bars;
-  // unverified chord labels can still be wrong on mixed church audio.
-  if(state.trackedChord && state.trackedChord.confidence>.20 && tracker.toneFrames>20){
+  // A causal chord sequence model votes across many audio frames. Do not
+  // advance a generic preset while the real harmony is uncertain.
+  if(state.trackedChord && tracker.toneFrames>18){
     const detected=state.trackedChord;
     const fromScale=[0,1,2,3,4,5,6].map(d=>chordFromDegree(key,d));
-    const match=fromScale.find(c=>c.notes[0]%12===detected.root && (c.notes[1]-c.notes[0]===3)===(detected.quality==='minor'));
-    if(match && (state.currentChord?.degree===match.degree||detected.confidence>.36))return match;
+    const match=fromScale.find(c=>c.notes[0]%12===detected.root &&
+      ((c.notes[1]-c.notes[0]===3)===(detected.quality==='minor')));
+    if(match)return match;
   }
+  if(state.currentChord)return state.currentChord;
+  // A sustained tonic fallback is safer than a speculative sequence.
+  if(!state.followState?.chords?.confident)return chordFromDegree(key,0);
   // Heuristic chord choice: prefer template changes compatible with detected melody.
   // Cannot truly infer chord function/song identity from single-note input.
   const melodyNote=(state.pitchMidi===null||performance.now()-state.lastVoicedAt>1300)?null:state.pitchMidi%12;
@@ -652,7 +672,14 @@ function schedule(){
       else arrangeStep(step,when,sixteenth,beatLen);
     }
     if(step%4===0)queueBeatVisual(step/4,when);
-    state.nextBeatTime+=sixteenth;state.stepIndex=(step+1)%16;
+    state.nextBeatTime+=sixteenth;
+    // Gentle phase correction to the observed beat grid, never a tempo command.
+    // The 10 ms cap prevents phase snapping from pushing a singer off balance.
+    if(!state.preview && prefs.followTempo!==false && pace.locked && step%4===0 && follower.beat.confidence>.7){
+      const predictedWallMs=performance.now()+(when-ctx.currentTime)*1000;
+      state.nextBeatTime+=follower.beat.correctionSeconds(predictedWallMs);
+    }
+    state.stepIndex=(step+1)%16;
   }
 }
 function queueBeatVisual(beat,when){
@@ -797,5 +824,5 @@ function draw(){
   state.frameId=requestAnimationFrame(draw);
 }
 function exportPrefs(){const blob=new Blob([JSON.stringify({app:'ChurchKeys Beta',exportedAt:new Date().toISOString(),preferences:prefs},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='churchkeys-church-preferences.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);showLog('Exported this browser’s settings as JSON (no recordings included).');}
-window.__churchKeysTest = () => ({running:state.running,source:state.sourceMode,key:state.key,bpm:currentBpm(),outputs:state.outputNotes,outputRms:state.outputRms,peakOutputRms:state.peakOutputRms,pitchEvents:state.recentEvents,observedFrames:tracker.frames,musicalFrames:tracker.toneFrames,provisional:state.provisional,audioSeenAt:state.audioSeenAt,playedChord:state.currentChord?.name||null,pace:pace.snapshot(),instrumentalHold:state.instrumentalHold,hasPlayed:state.hasPlayed});
+window.__churchKeysTest = () => ({follower:state.followState?{chord:state.followState.chords.chord?.name||null,chordConfidence:state.followState.chords.confidence,phrase:state.followState.phrase.status,phase:follower.beat.snapshot()}:null,running:state.running,source:state.sourceMode,key:state.key,bpm:currentBpm(),outputs:state.outputNotes,outputRms:state.outputRms,peakOutputRms:state.peakOutputRms,pitchEvents:state.recentEvents,observedFrames:tracker.frames,musicalFrames:tracker.toneFrames,provisional:state.provisional,audioSeenAt:state.audioSeenAt,playedChord:state.currentChord?.name||null,pace:pace.snapshot(),instrumentalHold:state.instrumentalHold,hasPlayed:state.hasPlayed});
 init();

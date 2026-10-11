@@ -1,11 +1,8 @@
-# v1.1 — Pace & Continuity
+# v1.2 — Performance-following foundation
 
-- New standalone confidence-gated pulse tracker and gradual tempo adaptation instead of direct noisy BPM assignment.
-- When no reliable beat is present, plays spacious support rather than an arbitrary fast groove.
-- Live accompaniment persists during voice breaks and after a recording finishes.
-- Last chord sustains during a pause, with independent bass support.
-- Gentle manual fade-out (approx. 1.5 seconds).
-- Clear tempo and instrumental-continuation status indicators.
-- Musician-only advanced checkboxes; Simple View remains uncluttered.
-- Ten automated harmonic/pace tests. Controlled in-browser file playback confirmed continued output and manual stop.
-- **Not production validated; no trained neural model or dependable free-rhythm vocal tempo tracking yet.**
+- Introduced `performance-follower.js` with causal probabilistic chord memory, beat-phase feedback and melody-activity/phrase continuity.
+- During automatic listening, hold prior harmony instead of blindly cycling an unverified preset progression.
+- Added a clearly labelled follower diagnostic; preserved Simple and Musician views.
+- Added nine focused tests (19 total passing).
+- Verified synthetic and real tutorial excerpt playback; real excerpt did NOT consistently lock beat or establish proven-correct harmony.
+- No trained neural model and no guarantees for unattended services.

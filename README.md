@@ -1,41 +1,30 @@
-# ChurchKeys v1.1 — Pace & Continuity
+# ChurchKeys v1.2 — Music Following Research Build
 
-**Field-testable browser accompaniment prototype. Not a production-validated, fully autonomous church keyboardist.** No login or paid API required. Designed for Netlify static hosting.
+**Working experimental accompaniment prototype, not production-ready or an AI keyboardist trained on Nigerian gospel recordings.** Free browser-based demo; no API key, login, paid cloud services or server required. Keeps the same Simple / Musician views as v1.1.
 
-## Deploy to the existing GitHub → Netlify site
+## Install to your existing GitHub + Netlify site
 
-1. Extract `ChurchKeys-Pace-and-Continuity-v1.1.zip` and upload/replace the project files in the **root** of your GitHub repository.
-2. Commit the changes. Netlify should automatically redeploy. No build command; publish directory: `.`.
-3. Reload the site. Check that the header displays **LIVE 1.1**. Close old tabs and hard-refresh if the old PWA/service worker is cached.
+Replace the existing repo files with all files from the v1.2 ZIP. Commit. Netlify builds the static files (build command empty, publish directory `.`). Hard-refresh the app and confirm the header shows **LIVE 1.2**. The PWA cache was updated.
 
-## Test the two requested behaviors
+## What's different in the real performance-following code
 
-1. Keep laptop volume low and plug in headphones. Optionally select **Play an audio file**, or use the built-in laptop microphone.
-2. Press **Start playing** and play/sing a song with a clear recurring pulse. In Simple View, watch **LISTENING FOR RHYTHM** change to **FOLLOWING PACE** after a sufficiently regular beat is detected. At uncertain tempo, the app uses a **spacious chord/pad bed** rather than forcing a fast praise groove.
-3. Have the vocalist pause (or let the chosen recording end). Observe **INSTRUMENTAL CONTINUES** and confirm bass/piano carry on at the last stable pace and harmony.
-4. Press **Stop**: the mix fades over approximately 1.5 seconds. You can also use Musician View to disable automatic tempo following or uninterrupted accompaniment, or use Tap BPM to override a weak detection.
+- `performance-follower.js`: a causal **probabilistic chord-sequence model**, not isolated guesses every frame. It keeps a previous-chord state, accumulates audio evidence and requires sustained support before switching.
+- An independent **beat-phase tracker** listens to repeated confident pulses and makes **bounded (≤10 ms per beat) scheduler corrections**; it does not force a new BPM or instantly jump to a transitory fill. Old v1.1 tempo stability controls remain.
+- A **phrase/activity continuity follower** preserves music through melody breaks. Since the mic mixes singers and instruments, it marks **lead-pitch evidence**, not proven isolated vocal detection. Stop always remains under human control.
+- Automatic accompaniment now **holds the previous harmony rather than stepping through a preset chord sequence without supporting evidence**. Guided and groove-preview modes keep their original progression behavior.
+- A visible status line displays **estimated chord**, phase-search/alignment, and melody-activity state. A stable estimate is NOT proof the chord is correct.
 
-## What actually changed from v1.0
+## Testing performed
 
-- Added `pace-follow.js`: a separate pulse-confidence and tempo control system. It requires repeated, reasonably consistent beat intervals. Arbitrary fast style presets no longer dictate the live tempo. It resists short spurious changes, changes speed gradually, and can relock after a genuine section break.
-- Starting without a consistent beat no longer launches a fast percussion-style pattern. The system plays slower/free-time support while it evaluates rhythm.
-- Removed the previous automatic silence cutoff (4.8 s); keeps playing last harmony during intentional breaks **by default**. It does not stop just because a source audio file ended.
-- Manual Stop now provides a short fade-out with a final sustained harmony.
-- Two additional advanced switches: **Follow the worship leader's pace**, **Keep playing when singing stops**. Both are enabled by default and not required for Simple View.
-- Live diagnostics indicate whether beat-following is waiting, stable, manual, or continuing instrumentally.
-- Updated PWA cache name for redeployment.
+- `npm test`: 19 Node tests passed for harmonic detection, pace follower, online chord memory, transient-noise rejection, sustained chord changes, silent passages and bounded phase correction.
+- Browser audio smoke test (Chromium/Playwright, HTML injected into isolated browser due to sandbox navigation restrictions): with a self-generated 14-second changing-chord WAV, output was audible/measurable, the system kept playing, and Stop ended playback. The detected tempo in that synthetic test was 60 BPM, and the chord-following display updated.
+- Browser test with 15 seconds extracted from the user-provided African praise tutorial: the engine produced audio output, but beat-phase was **not locked** and the tonal/key predictions were **not verified for musical accuracy**. This demonstrates why the model is not production-ready.
+- The synthetic audio and user-provided tutorial clip are **not bundled** in the ZIP.
 
-## Testing
+## What is still unsolved
 
-`npm test` runs Node built-in harmony and tempo tests. Tests cover slow-beat acquisition, short rhythmic clutter, gradual adjustment, pauses, and a clear new tempo after a section break. An in-browser test with a **self-generated 60 BPM chord/percussion WAV with a silent tail** confirmed the audio file started output, the performance continued after the file ended, and Stop ended the session. Test input was synthetic and is not included in the shipping ZIP. Audio tests do not measure artistic correctness.
+This version **does not yet** use a neural network trained on the submitted 11 tutorials and 21 songs. It cannot reliably separate voice, drums, piano or bass; correctly detect all live chord changes; automatically identify praise styles or song boundaries; recognize song titles; infer the beat in rubato/acapella worship; or sustain a professional keyboardist-level accompaniment for an unattended service. Many sounds/grooves remain arranged musical patterns.
 
-## Important limitations
+**Real next training milestone:** Assemble a permissioned, hand-checked dataset of isolated instrument/MIDI examples with timestamped chords, note onsets, bass lines, beat positions, section labels and singer transitions. Evaluate models against held-out recordings using accuracy, alignment error and end-to-end audio delay. Then replace the provisional estimators with trained inference models only if they beat these baselines. Source audio and private church material should not be shipped with the frontend.
 
-- **Still heuristic, not neural AI.** Neither these patches nor the 11 tutorial references trained a live machine-learning model. The app cannot yet reliably infer tempo from free-rhythm/acapella singing, align every attack to a live drummer's beat phase, recognize songs or accurately follow all spontaneous chord/key changes.
-- A strong instrumental beat can be tracked, but unpredictable phrases, room echoes, crowd noise and a laptop mic may fool beat/harmony detection. A human must monitor live trials and be ready to press Stop.
-- Tone.js-like audio generation here remains browser-based; samples downloaded from external CC BY 3.0 Salamander when enabled. The local recording and microphone content are not sent to an AI API.
-- For a genuine production-grade autonomous musician, we need a beat/phase synchronizer and song structure/chord tracking on permissioned, accurately annotated stems/MIDI recordings, plus extensive low-latency rehearsal evaluation.
-
-## Technical notes
-
-No build step or paid runtime dependencies. Static JS modules: `app.js`, `music-intelligence.js`, `pace-follow.js`. Manifest and service worker support offline-cached app shell. Microphone permission requires HTTPS. No user account or server APIs.
+**Safety:** Test on headphones or low-volume speakers at rehearsal. Have a human operator on Stop. Feedback from the PA into the laptop mic can corrupt estimates. Frontend static files contain no recording upload telemetry; optional third-party piano sample download may access external hosts if enabled.
