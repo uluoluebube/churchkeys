@@ -1,9 +1,10 @@
-# v0.5 — Nigerian Gospel Tutorial Study Edition
+# v1.0 — Live Engine & Input Reliability
 
-- First-pass reference study for 11 supplied video tutorials (128 minutes of source duration); timestamps and audio excerpt features included under `research/`.
-- New original accompaniment progression: I–V–IV–V, in addition to prior common progressions.
-- New independent bass approaches: Steady foundation / Walking passing notes / Energetic octave groove (Musician View).
-- New optional phrase-gap fill filter to leave some room for the singer (experimental pitch-activity heuristic).
-- Four original MIDI practice examples with separate piano and bass tracks.
-- No AI model trained, no videos included, no reliable automatic recognition of songs or service sections.
-- Existing Simple View, pianist settings and v0.4 engine retained.
+- Replaced key-gated silence with mixed-audio chroma estimation and explicit provisional startup.
+- Added optional local audio-file input and monitor for repeatable testing.
+- Added source and engine health status and actual output signal meter.
+- Prevented percussion-only tests from being labelled confident when no stable vocal pitch events exist.
+- Stabilized estimates with key-switch candidate dwell time.
+- Preserved Simple View, Musician View, musical feels, keyboard instruments, bass presets, groove audition, preferences, and Netlify static deployment.
+- Added Node unit tests and tested end-to-end audio event generation in a browser against both synthetic and real user-supplied musical material.
+- Caveat: no learned AI model; no guaranteed song following or harmonious performance yet.

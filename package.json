@@ -1,0 +1,8 @@
+{
+  "name": "churchkeys-live-engine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first worship accompaniment prototype. Zero runtime dependencies.",
+  "scripts": { "test": "node --test tests/*.test.mjs" }
+}

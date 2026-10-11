@@ -57,3 +57,17 @@ body[data-view="simple"] .listening-panel{max-width:100%}
 .quick-examples button:disabled{opacity:.55}
 .bass-control{border:1px solid #554368;background:linear-gradient(145deg,#29263a,#202435);border-radius:12px;padding:15px}
 @media(max-width:650px){.quick-mix{align-items:flex-start}.quick-examples{gap:9px}.quick-examples button{font-size:10px}}
+
+/* v1 live: clear source selection and health feedback without sacrificing original dashboard */
+.source-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;background:#171c2d;border:1px solid #544769;border-radius:11px;padding:13px 15px}
+.source-card>div:first-child{display:flex;flex-direction:column;gap:3px;flex:1;min-width:175px}.source-card label{font-size:12px;font-weight:800;color:#e3d4ff}.source-card span{font-size:10px;color:#a5acc2}.source-card select{border:1px solid #76629c;border-radius:9px;color:#fff;background:#272638;padding:10px 12px;min-width:205px}
+#fileInputArea{flex-basis:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 0 2px}#fileInputArea[hidden]{display:none}
+#fileInputArea .file-choose{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid #71608c;padding:10px 14px;border-radius:8px;background:#35264f;cursor:pointer}
+#fileInputArea input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}#fileInputArea .monitor-file{font-size:11px;color:#c7bed8;font-weight:500}#fileInputArea .monitor-file input{accent-color:#b49bed}
+.engine-health{margin-top:12px;border:1px solid #3b4c57;background:#19232e;display:flex;gap:12px;align-items:center;border-radius:12px;padding:12px 14px}
+.engine-led{height:10px;width:10px;background:#7bcbb3;box-shadow:0 0 11px #7bcbb355;border-radius:50%;flex:none}.engine-health strong{display:block;font-size:11px;letter-spacing:.35px;color:#b6e8d6}.engine-health strong[data-level=warn]{color:#ffd2a3}.engine-health strong[data-level=wait]{color:#b6acc9}.engine-health small{display:block;color:#9da9bb;font-size:10px;margin-top:5px}
+.file-tip{background:#24243d;color:#c8c1da;padding:12px;border-radius:10px;margin:10px 0;font-size:11px;line-height:1.5}
+@media(max-width:650px){.source-card select{width:100%}.source-card>div:first-child{flex-basis:100%}}
+/* Contrast polish for the original dark cards */
+.panel h2, .quick-panel h2, .controls-panel h2, .performance-panel h2 {color:#f6f2ff}
+.panel .mini-label, .quick-panel .mini-label {color:#c5adfa}
